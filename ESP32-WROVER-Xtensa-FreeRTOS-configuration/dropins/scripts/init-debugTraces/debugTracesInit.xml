@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ANT Buildfile
+ 
+  Copyright 2019-2020 MicroEJ Corp. All rights reserved.
+	This library is provided in source code for use, modification and test, subject to license terms.
+	Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
+-->
+<project name="debugTracesInit">
+	<target name="init/execution/debugTraces" extensionOf="init/execution" if="onBoard">
+		
+		<!-- create tmp dir -->
+		<local name="link.files.dir"/>
+		<microejtempfile deleteonexit="true" prefix="linkTraces" property="link.files.dir"/>
+		<mkdir dir="${link.files.dir}"/>
+		
+		<!-- get tmp link file name -->
+		<local name="link.traces"/>
+		<property name="link.traces" value="${link.files.dir}/traces.lscf" />
+		
+		<condition property="debug.traces.external" value="2" else="1">
+			<isset property="debug.traces.uart"/>
+		</condition>
+		
+		<echoxml file="${link.traces}" append="false">
+			<lscFragment>
+				<defSymbol name="_usart_traces_switch" value="${debug.traces.external}" rootSymbol="true"/>
+			</lscFragment>
+		</echoxml>
+		
+		<!-- add link file in linker's link files path -->
+		<augment id="partialLink.lscf.path">
+			<path location="${link.files.dir}"/>
+			<path location="${jpf.dir}/link"/>
+		</augment>
+	</target>
+</project>

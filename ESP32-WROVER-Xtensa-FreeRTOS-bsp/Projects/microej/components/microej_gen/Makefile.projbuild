@@ -1,0 +1,31 @@
+#
+# Makefile
+#
+# Copyright 2019-2020 MicroEJ Corp. All rights reserved.
+# This library is provided in source code for use, modification and test, subject to license terms.
+# Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
+#
+MICROEJ_APP_OBJ = $(PROJECT_PATH)/platform/lib/microejapp.o
+MICROEJ_APP_OBJ_BAK = $(PROJECT_PATH)/platform/lib/microejapp_bak.o
+MICROEJ_APP_ASM = $(PROJECT_PATH)/platform/lib/microejapp.s
+MICROEJ_APP_ASM_OUTPUT = $(PROJECT_PATH)/platform/lib/microejapp.S
+
+microejapp.o:
+# Copy the ASM file silently or do nothing if the .s is not there
+# (e.g. it has already been renamed)
+	mv $(MICROEJ_APP_ASM) $(MICROEJ_APP_ASM_OUTPUT) 2>/dev/null || true
+
+	mv $(MICROEJ_APP_OBJ) $(MICROEJ_APP_OBJ_BAK)
+	$(OBJCOPY) --rename-section _java_heap=.ext_ram.bss._java_heap \
+		--rename-section _java_immortals=.ext_ram.bss._java_immortals \
+		--rename-section ICETEA_HEAP=.ext_ram.bss.ICETEA_HEAP \
+		--rename-section .bss.vm.stacks.java=.ext_ram.bss.vm.stacks.java \
+		--rename-section .bss.microui.display.imagesHeap=.ext_ram.bss.microui.display.imagesHeap \
+		--rename-section .text.soar=.rodata.soar \
+		--rename-section .text.features.installed=.rodata.features.installed \
+		--rename-section .shieldedplug=.rodata.shieldedplug \
+		$(MICROEJ_APP_OBJ_BAK) $(MICROEJ_APP_OBJ)
+	rm $(MICROEJ_APP_OBJ_BAK)
+
+all: microejapp.o
+flash: microejapp.o

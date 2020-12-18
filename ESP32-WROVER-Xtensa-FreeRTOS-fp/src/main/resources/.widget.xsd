@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="https://developer.microej.com" xmlns="https://developer.microej.com"
+	elementFormDefault="qualified">
+
+	<!-- Generated file - DO NOT EDIT -->
+	<xs:element name="frontpanel">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="device">
+					<xs:complexType>
+						<xs:choice minOccurs="0" maxOccurs="unbounded">
+							
+							<xs:element name="ej.fp.widget.Button">
+								<xs:complexType>
+									<xs:attribute name="label" type="xs:string" use="required"/>
+									<xs:attribute name="x" type="xs:string" use="required"/>
+									<xs:attribute name="y" type="xs:string" use="required"/>
+									<xs:attribute name="skin" type="xs:string" use="required"/>
+									<xs:attribute name="pushedSkin" type="xs:string" use="required"/>
+									<xs:attribute name="filter" type="xs:string" use="optional"/>
+									<xs:attribute name="listenerClass" type="xs:string" use="optional"/>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ej.fp.widget.Display">
+								<xs:complexType>
+									<xs:attribute name="label" type="xs:string" use="optional"/>
+									<xs:attribute name="x" type="xs:string" use="required"/>
+									<xs:attribute name="y" type="xs:string" use="required"/>
+									<xs:attribute name="width" type="xs:string" use="required"/>
+									<xs:attribute name="height" type="xs:string" use="required"/>
+									<xs:attribute name="displayWidth" type="xs:string" use="optional"/>
+									<xs:attribute name="displayHeight" type="xs:string" use="optional"/>
+									<xs:attribute name="initialColor" type="xs:string" use="optional"/>
+									<xs:attribute name="alpha" type="xs:string" use="optional"/>
+									<xs:attribute name="filter" type="xs:string" use="optional"/>
+									<xs:attribute name="extensionClass" type="xs:string" use="optional"/>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ej.fp.widget.Joystick">
+								<xs:complexType>
+									<xs:attribute name="label" type="xs:string" use="optional"/>
+									<xs:attribute name="x" type="xs:string" use="required"/>
+									<xs:attribute name="y" type="xs:string" use="required"/>
+									<xs:attribute name="skin" type="xs:string" use="required"/>
+									<xs:attribute name="filter" type="xs:string" use="optional"/>
+									<xs:attribute name="upSkin" type="xs:string" use="required"/>
+									<xs:attribute name="downSkin" type="xs:string" use="required"/>
+									<xs:attribute name="leftSkin" type="xs:string" use="required"/>
+									<xs:attribute name="rightSkin" type="xs:string" use="required"/>
+									<xs:attribute name="enterSkin" type="xs:string" use="optional"/>
+									<xs:attribute name="disableEnter" type="xs:string" use="optional"/>
+									<xs:attribute name="repeatPeriod" type="xs:string" use="optional"/>
+									<xs:attribute name="listenerClass" type="xs:string" use="optional"/>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ej.fp.widget.LED">
+								<xs:complexType>
+									<xs:attribute name="label" type="xs:string" use="required"/>
+									<xs:attribute name="x" type="xs:string" use="required"/>
+									<xs:attribute name="y" type="xs:string" use="required"/>
+									<xs:attribute name="ledOff" type="xs:string" use="required"/>
+									<xs:attribute name="ledOn" type="xs:string" use="required"/>
+									<xs:attribute name="overlay" type="xs:string" use="optional"/>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ej.fp.widget.LongButton">
+								<xs:complexType>
+									<xs:attribute name="label" type="xs:string" use="required"/>
+									<xs:attribute name="x" type="xs:string" use="required"/>
+									<xs:attribute name="y" type="xs:string" use="required"/>
+									<xs:attribute name="skin" type="xs:string" use="required"/>
+									<xs:attribute name="pushedSkin" type="xs:string" use="required"/>
+									<xs:attribute name="longPeriod" type="xs:string" use="optional"/>
+									<xs:attribute name="filter" type="xs:string" use="optional"/>
+									<xs:attribute name="listenerClass" type="xs:string" use="optional"/>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ej.fp.widget.Pointer">
+								<xs:complexType>
+									<xs:attribute name="label" type="xs:string" use="optional"/>
+									<xs:attribute name="x" type="xs:string" use="required"/>
+									<xs:attribute name="y" type="xs:string" use="required"/>
+									<xs:attribute name="width" type="xs:string" use="required"/>
+									<xs:attribute name="height" type="xs:string" use="required"/>
+									<xs:attribute name="filter" type="xs:string" use="optional"/>
+									<xs:attribute name="areaWidth" type="xs:string" use="optional"/>
+									<xs:attribute name="areaHeight" type="xs:string" use="optional"/>
+									<xs:attribute name="touch" type="xs:string" use="optional"/>
+									<xs:attribute name="listenerClass" type="xs:string" use="optional"/>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ej.fp.widget.RepeatButton">
+								<xs:complexType>
+									<xs:attribute name="label" type="xs:string" use="required"/>
+									<xs:attribute name="x" type="xs:string" use="required"/>
+									<xs:attribute name="y" type="xs:string" use="required"/>
+									<xs:attribute name="skin" type="xs:string" use="required"/>
+									<xs:attribute name="pushedSkin" type="xs:string" use="required"/>
+									<xs:attribute name="repeatPeriod" type="xs:string" use="optional"/>
+									<xs:attribute name="filter" type="xs:string" use="optional"/>
+									<xs:attribute name="listenerClass" type="xs:string" use="optional"/>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ej.fp.widget.Wheel">
+								<xs:complexType>
+									<xs:attribute name="label" type="xs:string" use="optional"/>
+									<xs:attribute name="x" type="xs:string" use="required"/>
+									<xs:attribute name="y" type="xs:string" use="required"/>
+									<xs:attribute name="maxAngle" type="xs:string" use="required"/>
+									<xs:attribute name="steps" type="xs:string" use="required"/>
+									<xs:attribute name="pushedSkin" type="xs:string" use="required"/>
+									<xs:attribute name="filter" type="xs:string" use="optional"/>
+									<xs:attribute name="listenerClass" type="xs:string" use="optional"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:choice>
+						<xs:attribute name="name" type="xs:string" use="required"/>
+						<xs:attribute name="skin" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

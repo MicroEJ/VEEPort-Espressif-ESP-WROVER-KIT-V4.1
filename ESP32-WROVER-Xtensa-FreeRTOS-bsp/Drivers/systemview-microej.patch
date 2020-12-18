@@ -1,0 +1,242 @@
+diff --git a/components/app_trace/sys_view/Config/SEGGER_SYSVIEW_Conf.h b/components/app_trace/sys_view/Config/SEGGER_SYSVIEW_Conf.h
+index 2968c6e02..297c462f3 100644
+--- a/components/app_trace/sys_view/Config/SEGGER_SYSVIEW_Conf.h
++++ b/components/app_trace/sys_view/Config/SEGGER_SYSVIEW_Conf.h
+@@ -62,6 +62,10 @@ Purpose : SEGGER SystemView configuration.
+ Revision: $Rev: 5927 $
+ */
+ 
++/*
++ * Copyright 2018-2019 MicroEJ Corp. This file has been modified by MicroEJ Corp.
++ */
++
+ #ifndef SEGGER_SYSVIEW_CONF_H
+ #define SEGGER_SYSVIEW_CONF_H
+ 
+@@ -123,7 +127,7 @@ Revision: $Rev: 5927 $
+ *
+ *       SystemView buffer configuration
+ */
+-#define SEGGER_SYSVIEW_RTT_BUFFER_SIZE      1024                                // Number of bytes that SystemView uses for the buffer.
++#define SEGGER_SYSVIEW_RTT_BUFFER_SIZE      (32*1024)                           // Number of bytes that SystemView uses for the buffer. Modified by MicroEJ Corp.
+ #define SEGGER_SYSVIEW_RTT_CHANNEL          1                                   // The RTT channel that SystemView will use. 0: Auto selection
+ 
+ #define SEGGER_SYSVIEW_USE_STATIC_BUFFER    1                                   // Use a static buffer to generate events instead of a buffer on the stack
+diff --git a/components/app_trace/sys_view/SEGGER/SEGGER_SYSVIEW.c b/components/app_trace/sys_view/SEGGER/SEGGER_SYSVIEW.c
+index e0d48aca2..f6f21df28 100644
+--- a/components/app_trace/sys_view/SEGGER/SEGGER_SYSVIEW.c
++++ b/components/app_trace/sys_view/SEGGER/SEGGER_SYSVIEW.c
+@@ -138,6 +138,10 @@ Additional information:
+ 
+ */
+ 
++/*
++ * Copyright 2018-2019 MicroEJ Corp. This file has been modified by MicroEJ Corp.
++ */
++
+ /*********************************************************************
+ *
+ *       #include section
+@@ -238,6 +242,9 @@ typedef struct {
+         U32                     DisabledEvents;
+   const SEGGER_SYSVIEW_OS_API*  pOSAPI;
+         SEGGER_SYSVIEW_SEND_SYS_DESC_FUNC*   pfSendSysDesc;
++
++        U32                     MicroJVMTaskId; // MicroJVM TaskId, or 0 if none.
++        U32                     CurrentMicroEJTaskId; // Current MicroEJ TaskId, or 0 if none.
+ } SEGGER_SYSVIEW_GLOBALS;
+ 
+ /*********************************************************************
+@@ -247,6 +254,7 @@ typedef struct {
+ **********************************************************************
+ */
+ static void _SendPacket(U8* pStartPacket, U8* pEndPacket, unsigned int EventId);
++static U32 _SEGGER_SYSVIEW_convertMicroEJTask(U32 TaskId);
+ 
+ /*********************************************************************
+ *
+@@ -290,6 +298,13 @@ static SEGGER_SYSVIEW_GLOBALS _SYSVIEW_Globals;
+ static SEGGER_SYSVIEW_MODULE* _pFirstModule;
+ static U8                     _NumModules;
+ 
++/*
++ * Set to 1 when an active connection has been detected by SEGGER_SYSVIEW_WaitForConnection()
++ *
++ * Added by MicroEJ Corp.
++ */
++static U8 _connectionDetected = 0;
++
+ /*********************************************************************
+ *
+ *       Static code
+@@ -2032,6 +2047,7 @@ void SEGGER_SYSVIEW_OnTaskTerminate(U32 TaskId) {
+ *    TaskId - Task ID of task that started to execute.
+ */
+ void SEGGER_SYSVIEW_OnTaskStartExec(U32 TaskId) {
++  TaskId = _SEGGER_SYSVIEW_convertMicroEJTask(TaskId);
+   U8* pPayload;
+   U8* pPayloadStart;
+   RECORD_START(SEGGER_SYSVIEW_INFO_SIZE + SEGGER_SYSVIEW_QUANTA_U32);
+@@ -2070,6 +2086,7 @@ void SEGGER_SYSVIEW_OnTaskStopExec(void) {
+ *    TaskId - Task ID of task that started to execute.
+ */
+ void SEGGER_SYSVIEW_OnTaskStartReady(U32 TaskId) {
++  TaskId = _SEGGER_SYSVIEW_convertMicroEJTask(TaskId);
+   U8* pPayload;
+   U8* pPayloadStart;
+   RECORD_START(SEGGER_SYSVIEW_INFO_SIZE + SEGGER_SYSVIEW_QUANTA_U32);
+@@ -2093,6 +2110,7 @@ void SEGGER_SYSVIEW_OnTaskStartReady(U32 TaskId) {
+ *    Cause  - Reason for task to stop (i.e. Idle/Sleep)
+ */
+ void SEGGER_SYSVIEW_OnTaskStopReady(U32 TaskId, unsigned int Cause) {
++  TaskId = _SEGGER_SYSVIEW_convertMicroEJTask(TaskId);
+   U8* pPayload;
+   U8* pPayloadStart;
+   RECORD_START(SEGGER_SYSVIEW_INFO_SIZE + 2 * SEGGER_SYSVIEW_QUANTA_U32);
+@@ -2759,5 +2777,70 @@ void SEGGER_SYSVIEW_DisableEvents(U32 DisableMask) {
+   _SYSVIEW_Globals.DisabledEvents |= DisableMask;
+ }
+ 
++/*********************************************************************
++*
++*       SEGGER_SYSVIEW_WaitForConnection()
++*
++*  Function description
++*    Test whether SystemView application is connected or not
++*
++*  Return value
++*    Return 1 if connected, 0 otherwise
++*
++*  Added by IS2T.
++*/
++int SEGGER_SYSVIEW_isConnected(){
++  if (_connectionDetected == 0) {
++    _HandleIncomingPacket();
++    if (_SYSVIEW_Globals.EnableState != 0) {
++      _connectionDetected = 1;
++    }
++  }
++
++  return _connectionDetected;
++}
+ 
++/*********************************************************************
++*
++*       SEGGER_SYSVIEW_setMicroJVMTask()
++*
++*  Function description
++*    Indicate to SystemView the MicroJVM task id.
++*
++*  Parameters
++*    TaskID  - The MicroJVM task id.
++*
++*  Added by IS2T.
++*/
++void SEGGER_SYSVIEW_setMicroJVMTask(U32 TaskId){
++  _SYSVIEW_Globals.MicroJVMTaskId = TaskId;
++}
++
++/*********************************************************************
++*
++*       SEGGER_SYSVIEW_setCurrentMicroEJTask()
++*
++*  Function description
++*    Indicate to SystemView the currently scheduled MicroEJ task id.
++*
++*  Parameters
++*    TaskID  - The currently scheduled MicroEJ task id.
++*
++*  Added by IS2T.
++*/
++void SEGGER_SYSVIEW_setCurrentMicroEJTask(U32 TaskId){
++  _SYSVIEW_Globals.CurrentMicroEJTaskId = TaskId;
++}
++
++static U32 _SEGGER_SYSVIEW_convertMicroEJTask(U32 TaskId){
++  U32 CurrentMicroEJTaskId = _SYSVIEW_Globals.CurrentMicroEJTaskId;
++  if(TaskId == _SYSVIEW_Globals.MicroJVMTaskId && CurrentMicroEJTaskId != 0){
++    // Any event sent on the MicroJVM OS task is redirected to the latest Java Task
++    // The MicroJVM task does not appear in Segger SystemView
++    return CurrentMicroEJTaskId;
++  }
++  else{
++    return TaskId;
++  }
++}
+ /*************************** End of file ****************************/
+diff --git a/components/app_trace/sys_view/SEGGER/SEGGER_SYSVIEW.h b/components/app_trace/sys_view/SEGGER/SEGGER_SYSVIEW.h
+index 91cc0c6f4..c7dd4c3a6 100644
+--- a/components/app_trace/sys_view/SEGGER/SEGGER_SYSVIEW.h
++++ b/components/app_trace/sys_view/SEGGER/SEGGER_SYSVIEW.h
+@@ -61,6 +61,10 @@ Purpose : System visualization API.
+ Revision: $Rev: 5626 $
+ */
+ 
++/*
++ * Copyright 2018-2019 MicroEJ Corp. This file has been modified by MicroEJ Corp.
++ */
++
+ #ifndef SEGGER_SYSVIEW_H
+ #define SEGGER_SYSVIEW_H
+ 
+@@ -230,6 +234,9 @@ void SEGGER_SYSVIEW_GetSysDesc                    (void);
+ void SEGGER_SYSVIEW_SendTaskList                  (void);
+ void SEGGER_SYSVIEW_SendTaskInfo                  (const SEGGER_SYSVIEW_TASKINFO* pInfo);
+ void SEGGER_SYSVIEW_SendSysDesc                   (const char* sSysDesc);
++int SEGGER_SYSVIEW_isConnected                    (void); // Added by MicroEJ Corp
++void SEGGER_SYSVIEW_setMicroJVMTask                (U32); // Added by MicroEJ Corp
++void SEGGER_SYSVIEW_setCurrentMicroEJTask          (U32); // Added by MicroEJ Corp
+ 
+ /*********************************************************************
+ *
+diff --git a/components/app_trace/sys_view/Sample/Config/SEGGER_SYSVIEW_Config_FreeRTOS.c b/components/app_trace/sys_view/Sample/Config/SEGGER_SYSVIEW_Config_FreeRTOS.c
+index 2df7ee0c1..68a938124 100644
+--- a/components/app_trace/sys_view/Sample/Config/SEGGER_SYSVIEW_Config_FreeRTOS.c
++++ b/components/app_trace/sys_view/Sample/Config/SEGGER_SYSVIEW_Config_FreeRTOS.c
+@@ -61,6 +61,11 @@ File    : SEGGER_SYSVIEW_Config_FreeRTOS.c
+ Purpose : Sample setup configuration of SystemView with FreeRTOS.
+ Revision: $Rev: 3734 $
+ */
++
++/*
++ * Copyright 2018-2019 MicroEJ Corp. This file has been modified by MicroEJ Corp.
++ */
++
+ #include "freertos/FreeRTOS.h"
+ #include "SEGGER_SYSVIEW.h"
+ #include "rom/ets_sys.h"
+@@ -69,6 +74,10 @@ Revision: $Rev: 3734 $
+ #include "esp_intr_alloc.h"
+ #include "esp_clk.h"
+ 
++/* Added by MicroEJ Corp */
++#include "LLMJVM_MONITOR_SYSVIEW.h"
++#include "LLTRACE_SYSVIEW_configuration.h"
++
+ extern const SEGGER_SYSVIEW_OS_API SYSVIEW_X_OS_TraceAPI;
+ 
+ /*********************************************************************
+@@ -266,12 +275,22 @@ static void SEGGER_SYSVIEW_TS_Init()
+ #endif // TS_USE_TIMERGROUP
+ }
+ 
++SEGGER_SYSVIEW_OS_API SYSVIEW_MICROEJ_X_OS_TraceAPI;
++
++static void SYSVIEW_MICROEJ_X_OS_SendTaskList(void){
++  SYSVIEW_X_OS_TraceAPI.pfSendTaskList();
++  LLMJVM_MONITOR_SYSTEMVIEW_send_task_list();
++}
++
+ void SEGGER_SYSVIEW_Conf(void) {
+     U32 disable_evts = 0;
+ 
++	SYSVIEW_MICROEJ_X_OS_TraceAPI.pfGetTime = SYSVIEW_X_OS_TraceAPI.pfGetTime;
++	SYSVIEW_MICROEJ_X_OS_TraceAPI.pfSendTaskList = SYSVIEW_MICROEJ_X_OS_SendTaskList;
++
+     SEGGER_SYSVIEW_TS_Init();
+     SEGGER_SYSVIEW_Init(SYSVIEW_TIMESTAMP_FREQ, SYSVIEW_CPU_FREQ,
+-                        &SYSVIEW_X_OS_TraceAPI, _cbSendSystemDesc);
++                        &SYSVIEW_MICROEJ_X_OS_TraceAPI, _cbSendSystemDesc);
+     SEGGER_SYSVIEW_SetRAMBase(SYSVIEW_RAM_BASE);
+ 
+ #if !CONFIG_SYSVIEW_EVT_OVERFLOW_ENABLE

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+	Platform
+	
+	Copyright 2020 MicroEJ Corp. All rights reserved.
+	This library is provided in source code for use, modification and test, subject to license terms.
+	Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
+--><platform hardwarePartNumber="ESP32WROVER" name="Platform" version="1.6.2" provider="MicroEJ" vendorUrl="http://developer.microej.com/4.0/sdk/license" workbenchMinVersion="1.7.0">
+    <environment architecture="ESP32" baseline="14" hardwarePartNumber="ESP32" toolchain="GNUv52b96_xtensa-esp32-psram" name="simikou2" techVersion="1.6" version="7.14.0" level="eval" provider="MicroEJ" licenseTag="IS2T_J8F5C"/>
+    <group name="frontPanel"/>
+    <group name="fs"/>
+    <group name="hal"/>
+    <group name="extensible"/>
+    <group name="net"/>
+    <group name="management"/>
+    <group name="ecom"/>
+    <group name="ssl"/>
+    <group name="ui">
+        <without name="display_decoder_bmpm"/>
+        <without name="input"/>
+    </group>
+    <group name="wifi"/>
+</platform>

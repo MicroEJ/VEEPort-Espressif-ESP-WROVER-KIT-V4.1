@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="init-bsp-wrover">
+  <description>Specify the bsp build script to use.</description>
+
+  <target name="init/bsp/wrover" extensionOf="init/workbench" if="onBoard">
+    <condition property="deploy.bsp.microejscript.name" value="build" else="build_no_ota_no_systemview">
+      <or>
+	    <not>
+		  <isset property="com.microej.architecture.capability"/>
+	    </not>
+	    <equals arg1="${com.microej.architecture.capability}" arg2="single"/>
+	  </or>
+    </condition>
+  </target>
+</project>

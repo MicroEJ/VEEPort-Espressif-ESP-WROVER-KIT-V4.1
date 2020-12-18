@@ -1,0 +1,63 @@
+/*
+ * C
+ *
+ * Copyright 2018 IS2T. All rights reserved.
+ * IS2T PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ */
+
+/* Prevent recursive inclusion */
+
+#ifndef __RAM_TEST_H
+#define __RAM_TEST_H
+#include <stdint.h>
+
+/** Public constant declaration */
+
+/**
+ *    Test definitions
+ */
+#define RAM_TEST_ALL_LOW_DATA       0x0001
+#define RAM_TEST_ALL_HIGH_DATA      0x0002
+#define RAM_TEST_HALF_HIGH_DATA     0x0004
+#define RAM_TEST_ODD_BIT_DATA       0x0008
+#define RAM_TEST_EVEN_BIT_DATA      0x0010
+#define RAM_TEST_GENERIC_DATA       0x0020
+#define RAM_TEST_ADDRESS_BIT        0x0100
+#define RAM_TEST_READ_SPEED         0x1000
+#define RAM_TEST_WRITE_SPEED        0x2000
+#define RAM_TEST_TRANSFERT_SPEED    0x4000
+#define RAM_TEST_ALL_FUNCTIONAL     0x0FFF
+#define RAM_TEST_ALL_TESTS          0xFFFF
+
+/**
+ *  Returned test error
+ */
+#define RAM_TEST_ERROR_NO_ERROR               0x00000000
+#define RAM_TEST_ERROR_ALL_LOW_32BIT_DATA     0x00000001
+#define RAM_TEST_ERROR_ALL_HIGH_32BIT_DATA    0x00000002
+#define RAM_TEST_ERROR_HALF_HIGH_32BIT_DATA   0x00000004
+#define RAM_TEST_ERROR_ODD_BIT_32BIT_DATA     0x00000008
+#define RAM_TEST_ERROR_EVEN_BIT_32BIT_DATA    0x00000010
+#define RAM_TEST_ERROR_GENERIC_32BIT_DATA     0x00000020
+#define RAM_TEST_ERROR_ADDRESS_BIT_32BIT_DATA 0x00000040
+#define RAM_TEST_ERROR_ALL_LOW_16BIT_DATA     0x00000080
+#define RAM_TEST_ERROR_ALL_HIGH_16BIT_DATA    0x00000100
+#define RAM_TEST_ERROR_HALF_HIGH_16BIT_DATA   0x00000200
+#define RAM_TEST_ERROR_ODD_BIT_16BIT_DATA     0x00000400
+#define RAM_TEST_ERROR_EVEN_BIT_16BIT_DATA    0x00000800
+#define RAM_TEST_ERROR_GENERIC_16BIT_DATA     0x00001000
+#define RAM_TEST_ERROR_ADDRESS_BIT_16BIT_DATA 0x00002000
+#define RAM_TEST_ERROR_ALL_LOW_8BIT_DATA      0x00004000
+#define RAM_TEST_ERROR_ALL_HIGH_8BIT_DATA     0x00008000
+#define RAM_TEST_ERROR_HALF_HIGH_8BIT_DATA    0x00010000
+#define RAM_TEST_ERROR_ODD_BIT_8BIT_DATA      0x00020000
+#define RAM_TEST_ERROR_EVEN_BIT_8BIT_DATA     0x00040000
+#define RAM_TEST_ERROR_GENERIC_8BIT_DATA      0x00080000
+#define RAM_TEST_ERROR_ADDRESS_BIT_8BIT_DATA  0x00100000
+
+/** public function declaration */
+double ramTest_getAverageWriteSpeed(void);
+double ramTest_getAverageReadSpeed(void);
+double ramTest_getAverageTransfertSpeed(void);
+
+#endif

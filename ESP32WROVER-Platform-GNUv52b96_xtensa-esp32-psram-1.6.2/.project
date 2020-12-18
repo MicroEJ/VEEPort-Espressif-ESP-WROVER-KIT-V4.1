@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>ESP32WROVER-Platform-GNUv52b96_xtensa-esp32-psram-1.6.2</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>com.is2t.microej.pro.workbench.jpfBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>com.is2t.microej.pro.workbench.jpfNature</nature>
+	</natures>
+</projectDescription>
