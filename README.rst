@@ -1,5 +1,5 @@
 ..
-    Copyright 2019-2020 MicroEJ Corp. All rights reserved.
+    Copyright 2019-2021 MicroEJ Corp. All rights reserved.
 	This library is provided in source code for use, modification and test, subject to license terms.
 	Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
 
@@ -13,9 +13,9 @@
 .. |ARCH| replace:: MicroEJ Architecture
 .. |CIDE| replace:: MICROEJ SDK
 .. |RTOS| replace:: FreeRTOS RTOS
-.. |DEPLOYTOOL_NAME| replace:: Espressif Esptool
 .. |MANUFACTURER| replace:: Espressif
 
+.. _中文版: ./docs/zn_CH/README_CN.rst
 .. _README MicroEJ BSP: ./ESP32-WROVER-Xtensa-FreeRTOS-bsp/Projects/microej/README.rst
 .. _RELEASE NOTES: ./RELEASE_NOTES.rst
 .. _CHANGELOG: ./CHANGELOG.rst
@@ -23,6 +23,8 @@
 ==========================================
 |PLATFORM| for |MANUFACTURER| |BOARD_NAME|
 ==========================================
+
+`中文版`_
 
 This project is used to build a |PLATFORM| for the |BOARD_NAME|
 development board.
@@ -273,7 +275,7 @@ The firmware is launched. Please wait for the final message:
 .. code-block::
 
       Leaving...
-      Hard resetting...
+      Hard resetting via RTS pin...
 
 |MANUFACTURER| build and flash documentation are also available `here
 <https://docs.espressif.com/projects/esp-idf/en/v3.3.4/get-started/index.html#build-and-flash>`__
@@ -394,6 +396,10 @@ Please refer to
 https://docs.microej.com/en/latest/ApplicationDeveloperGuide/standaloneApplication.html
 for more information on how to build a MicroEJ Standalone Application.
 
+An evaluation license is needed for building an application. Please refer to
+https://docs.microej.com/en/latest/overview/licenses.html#evaluation-license
+for information on how to acquire and activate a license.
+
 Testsuite Configuration
 =======================
 
@@ -409,7 +415,7 @@ FTDI USB wire to the pin D0 of the JP4 connector and ground.
 
 In ``config.properties``, the property ``target.platform.dir`` must be
 set to the absolute path to the platform.  For example
-``C:/P0065_ESP32-WROVER-Platform/ESP32-WROVER-Xtensa-FreeRTOS-platform/source``.
+``C:/Platform-Espressif-ESP-WROVER-KIT-V4.1/ESP32-WROVER-Xtensa-FreeRTOS-platform/source``.
 
 Testsuite FS
 ------------
@@ -426,7 +432,7 @@ esp-idf/make/project.mk: No such file or directory
 
 .. code-block::
 
-   Makefile:11: P0065_ESP32-WROVER-Platform/ESP32-WROVER-Xtensa-FreeRTOS-bsp/Projects/microej/../../Drivers/esp-idf/make/project.mk: No such file or directory
+   Makefile:11: Platform-Espressif-ESP-WROVER-KIT-V4.1/ESP32-WROVER-Xtensa-FreeRTOS-bsp/Projects/microej/../../Drivers/esp-idf/make/project.mk: No such file or directory
    make: *** No rule to make target 'P0065_ESP32-WROVER-Platform/ESP32-WROVER-Xtensa-FreeRTOS-bsp/Projects/microej/../../Drivers/esp-idf/make/project.mk'.  Stop.
    cp: cannot stat 'build/microej.elf': No such file or directory
 

@@ -33,7 +33,7 @@ ENV_SDKCONFIG="sdkconfig_no_ota_no_systemview"
 if [ -e "sdkconfig" ]; then
     cmp -s "sdkconfig" "sdkconfig.old" || (echo "Backup sdkconfig to sdkconfig.old" ; cp "sdkconfig" "sdkconfig.old")
     # Then use ENV_SDKCONFIG if they differ
-    cmp -s "sdkconfig" "$ENV_SDKCONFIG" && (echo "File are the same, don't update sdkconfig") || (echo "Copy $ENV_SDKCONFIG to sdkconfig" ; cp "$ENV_SDKCONFIG" "sdkconfig")
+    cmp -s "sdkconfig" "$ENV_SDKCONFIG" && (echo "$ENV_SDKCONFIG already installed as sdkconfig") || (echo "Copy $ENV_SDKCONFIG to sdkconfig" ; cp "$ENV_SDKCONFIG" "sdkconfig")
 else
     echo "Copy $ENV_SDKCONFIG to sdkconfig"
     cp "$ENV_SDKCONFIG" "sdkconfig"

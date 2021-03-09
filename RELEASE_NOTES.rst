@@ -6,7 +6,7 @@
 .. |BOARD_NAME| replace:: ESP-WROVER-KIT V4.1
 .. |BOARD_REVISION| replace:: 4.1
 .. |PLATFORM_NAME| replace:: ESP32 WROVER Platform
-.. |PLATFORM_VER| replace:: 1.6.2
+.. |PLATFORM_VER| replace:: 1.7.0
 .. |RCP| replace:: MICROEJ SDK
 .. |PLATFORM| replace:: MicroEJ Platform
 .. |PLATFORMS| replace:: MicroEJ Platforms
@@ -14,7 +14,6 @@
 .. |ARCH| replace:: MicroEJ Architecture
 .. |CIDE| replace:: MICROEJ SDK
 .. |RTOS| replace:: FreeRTOS RTOS
-.. |DEPLOYTOOL_NAME| replace:: Espressif Esptool
 .. |MANUFACTURER| replace:: Espressif
 
 .. _README MicroEJ BSP: ./ESP32-WROVER-Xtensa-FreeRTOS-bsp/Projects/microej/README.rst
@@ -55,17 +54,17 @@ This |PLATFORM| contains the following dependencies:
    * - UI Pack (simikou2UI)
      - 12.1.5
    * - NET Pack
-     - 9.2.1
+     - 9.2.3
    * - NET-ADDONS Pack
-     - 2.1.6
+     - 2.3.0
    * - HAL Pack
-     - 2.0.1
+     - 2.0.2
    * - BLUETOOTH Pack
-     - 2.0.0
+     - 2.1.0
    * - FS Pack
-     - 4.0.2
+     - 4.0.3
    * - DEVICE Pack
-     - 1.1.0
+     - 1.1.1
 
 Please refer to the |PLATFORM| `module description file <./ESP32-WROVER-Xtensa-FreeRTOS-configuration/module.ivy>`_ 
 for more details.
@@ -124,16 +123,16 @@ connected to the MCU via a SPI link, clocked at 80MHz for ST7789V LCP
 display and at 33MHz for ILI9341V LCD display.
 
 MicroUI requires a RAM buffer to store the dynamic images data.  A
-dynamic is an image decoded at runtime (PNG image) or an image created
-by the MicroEJ application thanks to the API ``Image.create(width, height)``.
+dynamic image is an image decoded at runtime (PNG image) or an image created
+by the MicroEJ application using the ``Image.create(width, height)`` API.
 This buffer is located in external RAM.
 
 Leds
 ~~~~
 
 The board provides an RGB matrix with 3 colored LEDs (red, green ,
-blue).  However, only the red LED is available for the user.  The two
-others LEDs use GPIOs multiplexed for other uses.
+blue).  However, only the red LED is available for the user.  The other
+two LEDs are using GPIOs multiplexed for other uses.
 
 Network
 -------
@@ -141,8 +140,8 @@ Network
 |PLATFORM| features a network interface with Wi-Fi as an
 underlying hardware media.  A limited number of 16 sockets could be
 used for TCP connections, 16 for TCP listening (server) connections
-and 16 for UDP connections. A DHCP client could be activated to
-retrieve IP address. All DNS requests could be handled by a MicroEJ
+and 16 for UDP connections. A DHCP client can be activated to retrieve
+a dynamic IP address. All DNS requests can be handled by a MicroEJ
 software implementation or a native one.
 
 SSL
@@ -156,9 +155,9 @@ encoded.
 File System
 -------
 
-|PLATFORM| features a file system interface. A SD card is
+|PLATFORM| features a file system interface. An SD card is
 used for the storage (previously formated to a FAT32 file system). Up
-to 2 files could be opened simultaneously.
+to 2 files can be opened simultaneously.
 
 
 Known issues/limitations

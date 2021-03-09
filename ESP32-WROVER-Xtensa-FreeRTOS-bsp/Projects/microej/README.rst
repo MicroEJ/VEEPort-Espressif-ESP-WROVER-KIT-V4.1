@@ -1,11 +1,11 @@
 .. 
-	Copyright 2019-2020 MicroEJ Corp. All rights reserved.
+	Copyright 2019-2021 MicroEJ Corp. All rights reserved.
 	This library is provided in source code for use, modification and test, subject to license terms.
 	Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
 
 .. |BOARD_NAME| replace:: ESP-WROVER-KIT V4.1
 .. |BOARD_REVISION| replace:: 4.1
-.. |PLATFORM_VER| replace:: 1.6.2
+.. |PLATFORM_VER| replace:: 1.7.0
 .. |RCP| replace:: MICROEJ SDK
 .. |PLATFORM| replace:: MicroEJ Platform
 .. |PLATFORMS| replace:: MicroEJ Platforms
@@ -13,9 +13,9 @@
 .. |ARCH| replace:: MicroEJ Architecture
 .. |CIDE| replace:: MICROEJ SDK
 .. |RTOS| replace:: FreeRTOS RTOS
-.. |DEPLOYTOOL_NAME| replace:: Espressif Esptool
 .. |MANUFACTURER| replace:: Espressif
 
+.. _中文版: ./docs/zn_CH/README_CN.rst
 .. _README: ./../../../README.rst
 .. _RELEASE NOTES: ./../../../RELEASE_NOTES.rst
 .. _CHANGELOG: ./../../../CHANGELOG.rst
@@ -23,6 +23,8 @@
 ================
 |BOARD_NAME| BSP
 ================
+
+`中文版`_
 
 This project contains the BSP sources of the |PLATFORM| for the
 |BOARD_NAME|.  The BSP project is based on Espressif IoT Development
@@ -129,7 +131,7 @@ Debugging with a WROVER dev kit
 1. Go to Espressif esp-idf "Setup of OpenOCD" page (available `here <https://docs.espressif.com/projects/esp-idf/en/v3.3.4/api-guides/jtag-debugging/index.html#jtag-debugging-setup-openocd>`_)
 2. Follow Espressif esp-idf instructions to install OpenOCD software on your machine
 3. Follow Espressif esp-idf instructions to configure ESP32-WROVER Kit v4.1 board (available `here <https://docs.espressif.com/projects/esp-idf/en/v3.3.4/api-guides/jtag-debugging/configure-wrover.html#configure-usb-drivers>`_)
-4. Follow Espressif esp-idf instructions to run OpenOCD (available `here <https://docs.espressif.com/projects/esp-idf/en/v3.3.4/api-guides/jtag-debugging/index.html#run-openocd>`_).  On Windows, the OpenOCD can be executed in MingGW (``mingw32.exe``) or in Windows Command Prompt (use ``.\bin\openocd ...``).
+4. Follow Espressif esp-idf instructions to run OpenOCD (available `here <https://docs.espressif.com/projects/esp-idf/en/v3.3.4/api-guides/jtag-debugging/index.html#run-openocd>`_).  On Windows, the OpenOCD can be executed in MingGW (``mingw32.exe``) or in Windows Command Prompt (use ``.\bin\openocd ...``). The configuration file is ``esp32-wrover-kit-1.8v.cfg``.
 
 Your OpenOCD GDB server is now ready to launch a GDB client debug session.
 

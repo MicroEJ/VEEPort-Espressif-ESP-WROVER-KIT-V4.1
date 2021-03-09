@@ -37,7 +37,7 @@ REM If sdkconfig exists
 IF EXIST "sdkconfig" (
    FC "sdkconfig" "sdkconfig.old" >NUL || (ECHO Backup sdkconfig to sdkconfig.old && COPY "sdkconfig" "sdkconfig.old")
    REM Then use ENV_SDKCONFIG if they differ
-   FC "sdkconfig" %ENV_SDKCONFIG% >NUL && (ECHO File are the same, don't update sdkconfig) || (ECHO Copy %ENV_SDKCONFIG% to sdkconfig && COPY /Y %ENV_SDKCONFIG% "sdkconfig" && COPY /B "sdkconfig" +,,)
+   FC "sdkconfig" %ENV_SDKCONFIG% >NUL && (ECHO  %ENV_SDKCONFIG% already installed as sdkconfig) || (ECHO Copy %ENV_SDKCONFIG% to sdkconfig && COPY /Y %ENV_SDKCONFIG% "sdkconfig" && COPY /B "sdkconfig" +,,)
 ) ELSE (
    REM sdkconfig doesn't exist, use ENV_SDKCONFIG
    ECHO Copy %ENV_SDKCONFIG% to sdkconfig

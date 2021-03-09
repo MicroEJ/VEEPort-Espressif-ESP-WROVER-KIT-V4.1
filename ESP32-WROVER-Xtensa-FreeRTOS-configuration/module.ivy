@@ -1,13 +1,13 @@
 <!--
 	IVY
 
-	Copyright 2018-2020 MicroEJ Corp. All rights reserved.
+	Copyright 2018-2021 MicroEJ Corp. All rights reserved.
 	This library is provided in source code for use, modification and test, subject to license terms.
 	Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org" xmlns:m="http://ant.apache.org/ivy/extra" xmlns:ej="https://developer.microej.com" ej:version="2.0.0">
 
-	<info organisation="com.microej.platform.esp32.esp-wrover-kit-v41" module="Platform" status="integration" revision="1.6.2">
+	<info organisation="com.microej.platform.esp32.esp-wrover-kit-v41" module="Platform" status="integration" revision="1.7.0">
         <ea:build organisation="com.is2t.easyant.buildtypes" module="build-custom" revision="1.+"/>
     	<ea:plugin org="com.is2t.easyant.plugins" module="eclipse-antRunner" revision="1.+"/>
     	<ea:plugin org="com.is2t.easyant.plugins" module="mam" revision="1.+"/>
@@ -31,9 +31,7 @@
 		<dependency org="com.microej.architecture.ESP32.GNUv52b96_xtensa-esp32-psram" name="simikou2" rev="7.14.0">
 			<artifact name="simikou2" m:classifier="${com.microej.platformbuilder.architecture.usage}" ext="xpf"/>
 		</dependency>
-		<dependency org="com.microej.architecture.ESP32.GNUv52b96_xtensa-esp32-psram" name="simikou2-ui-pack" rev="12.1.5" >
-					<artifact name="simikou2-ui-pack" ext="xpfp"/>
-		</dependency>
+		<dependency org="com.microej.architecture.ESP32.GNUv52b96_xtensa-esp32-psram" name="simikou2-ui-pack" rev="12.1.5"/>
 		
 		<dependency org="com.microej.pack" name="net" rev="9.2.3" transitive="false"/>
 		<dependency org="com.microej.pack" name="net-addons" rev="2.3.0" transitive="false"/>
