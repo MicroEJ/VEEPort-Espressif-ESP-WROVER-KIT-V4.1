@@ -8,6 +8,16 @@
 ===========
 
 ---------------------
+ [1.7.1] - 2021-03-16
+---------------------
+
+Fixed
+=====
+
+- Fix Platform project directory version.  Ensure the Platform project imported after a clone is the one being populated during the Platform build.
+- Removed old mention of esptool.  esptool is not distributed by the Platform but by ESP-IDF.
+
+---------------------
  [1.7.0] - 2021-03-09
 ---------------------
 

@@ -5,7 +5,7 @@
 
 .. |BOARD_NAME| replace:: ESP-WROVER-KIT V4.1
 .. |BOARD_REVISION| replace:: 4.1
-.. |PLATFORM_VER| replace:: 1.7.0
+.. |PLATFORM_VER| replace:: 1.7.1
 .. |RCP| replace:: MICROEJ SDK
 .. |PLATFORM| replace:: MicroEJ Platform
 .. |PLATFORMS| replace:: MicroEJ Platforms
@@ -194,8 +194,4 @@ The following dependencies are included as part of the BSP:
   * wadapps (Multi Application Framework): 1.0.1
   * wadapps.impl (extra implementation for Multi Application Framework): 1.0.2
   * microej-util: 1.3.0
-
-- Third party tools
-
-  * esptool (Flashing tool): 1.2.0
 

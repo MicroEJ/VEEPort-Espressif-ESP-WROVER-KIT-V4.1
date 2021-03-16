@@ -5,7 +5,7 @@
 
 .. |BOARD_NAME| replace:: ESP-WROVER-KIT V4.1
 .. |BOARD_REVISION| replace:: 4.1
-.. |PLATFORM_VER| replace:: 1.7.0
+.. |PLATFORM_VER| replace:: 1.7.1
 .. |RCP| replace:: MICROEJ SDK
 .. |PLATFORM| replace:: MicroEJ Platform
 .. |PLATFORMS| replace:: MicroEJ Platforms
@@ -26,7 +26,7 @@
 
 本项目用来为 |BOARD_NAME| 开发板 |PLATFORM| .
 
-.. image:: ./images/esp-wrover-kit-v4.1-front.jpg
+.. image:: ../../images/esp-wrover-kit-v4.1-front.jpg
 构建
 使用以下命令克隆代码仓库： ``git clone --recursive https://github.com/MicroEJ/Platform-Espressif-ESP-WROVER-KIT-V4.1``.
 

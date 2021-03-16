@@ -5,7 +5,7 @@
 
 .. |BOARD_NAME| replace:: ESP-WROVER-KIT V4.1
 .. |BOARD_REVISION| replace:: 4.1
-.. |PLATFORM_VER| replace:: 1.6.2
+.. |PLATFORM_VER| replace:: 1.7.1
 .. |RCP| replace:: MICROEJ SDK
 .. |PLATFORM| replace:: MicroEJ Platform
 .. |PLATFORMS| replace:: MicroEJ Platforms
@@ -249,7 +249,7 @@ bootloader. Please Follow the steps below:
 - Connect the USB connector of the board to your computer
 - Take a look at the new COM port available
 - Edit the
-  ``ESP32-WROVER-Xtensa-FreeRTOS-bsp-bsp/Projects/microej/scripts/run.xxx``
+  ``ESP32-WROVER-Xtensa-FreeRTOS-bsp/Projects/microej/scripts/run.xxx``
   script (where ``xxx`` is ``bat`` for Windows and ``sh`` for Linux /
   macOS). Update the ``ESPPORT`` variable to put the newly COM port
   discovered previously and uncomment the associated line if not
