@@ -7,6 +7,16 @@
  Changelog
 ===========
 
+
+---------------------
+ [1.8.0] - 2021-04-16
+---------------------
+
+Added
+=====
+
+- Update PCA to 1.2.0.  See `./ESP32-WROVER-Xtensa-FreeRTOS-configuration/build/CHANGELOG.md`_ for more details.
+
 ---------------------
  [1.7.1] - 2021-03-16
 ---------------------

@@ -1,7 +1,7 @@
 <!--
 	ANT
 
-	Copyright 2020 MicroEJ Corp. All rights reserved.
+	Copyright 2020-2021 MicroEJ Corp. All rights reserved.
 	This library is provided in source code for use, modification and test, subject to license terms.
 	Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
 	
@@ -15,11 +15,11 @@
 	<!-- Publish main artifact (platform) -->
 	<target name="module-publish:platform" extensionOf="package" depends="readme:init,changelog:init" unless="${skip.publish}">
 		<zip destfile="${target.main.artifact}.zip" basedir="${platform.publish.dir}"/>
-		<ea:registerartifact ext="zip" type="zip" settingsRef="${project.ivy.instance}" />
+		<ea:registerartifact ext="zip" type="zip" settingsRef="${project.ivy.instance}" confs="default"/>
 	</target>
 
 	<!-- Publish additional files -->
-	<target name="module-publish:additional-files" extensionOf="package" depends="readme:init,changelog:init" unless="${skip.publish}">
+	<target name="module-publish:additional-files" extensionOf="package" depends="readme:init,changelog:init" if="has.readme.file" unless="${skip.publish}">
 		<copy todir="${target.artifacts}" file="${readme.file}" />
 		<copy todir="${target.artifacts}" file="${changelog.file}" />
 	</target>
@@ -27,7 +27,7 @@
 	<!-- Publish additional file -->
 	<target name="module-publish:additional-files:releasenotes" extensionOf="package" if="has.releasenotes.file" unless="${skip.publish}">
 		<copy todir="${target.artifacts}" file="${releasenotes.file}"/>
-		<ea:registerartifact name="${releasenotes.name}" type="${releasenotes.ext}" settingsRef="${project.ivy.instance}" />
+		<ea:registerartifact name="${releasenotes.name}" type="${releasenotes.ext}" ext="${releasenotes.ext}" settingsRef="${project.ivy.instance}" confs="dist" />
 	</target>
 	
 </project>

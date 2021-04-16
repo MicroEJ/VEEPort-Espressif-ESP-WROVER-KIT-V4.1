@@ -14,22 +14,27 @@
          - Update the `PLATFORM_VER` in all `README.rst` files and in the `RELEASE_NOTES.rst` file.
          - Update the `CHANGELOG.rst` and `RELEASE_NOTES.rst` to reflect the changes.
     -->
-	<info organisation="com.microej.platform.esp32.esp-wrover-kit-v41" module="Platform" status="integration" revision="1.7.1">
+	<info organisation="com.microej.platform.esp32.esp-wrover-kit-v41" module="Platform" status="integration" revision="1.8.0">
         <ea:build organisation="com.is2t.easyant.buildtypes" module="build-custom" revision="1.+"/>
     	<ea:plugin org="com.is2t.easyant.plugins" module="eclipse-antRunner" revision="1.+"/>
     	<ea:plugin org="com.is2t.easyant.plugins" module="mam" revision="1.+"/>
+
+        <!-- Retrieve embedded and default dependencies -->
+    	<ea:property name="dependencies.retrieve.conf" value="embedded,default" />
     	<ea:plugin org="com.is2t.easyant.plugins" module="ivy-retrieve" revision="1.+"/>
+
 		<ea:plugin org="com.is2t.easyant.plugins" module="mccom-install" revision="1.3.+"/>
 		<ea:property name="com.microej.platformbuilder.bsp.microejcco.relative.dir" value="Projects/microej" description="BSP relative folder where deploying the CCOs."/>    
 	</info>
 
-	<configurations>
-		<conf name="default" visibility="public" description="runtime dependencies artifact can be used with this conf"/>
-		<conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
-		<conf name="provided" visibility="public" description="this is much like compile, but indicates you expect the JDK or a container to provide it. It is only available on the compilation classpath, and is not transitive."/>
-		<conf name="source" visibility="public" description="source code and architectures"/>
-		<conf name="documentation" visibility="public" description="documentation files"/>
-	</configurations>
+    <configurations defaultconfmapping="embedded->default">
+		<conf name="default" visibility="public" description="Runtime dependencies to other artifacts"/>
+		<conf name="provided" visibility="public" description="Compile-time dependencies to APIs provided by the platform"/>
+		<conf name="documentation" visibility="public" description="Documentation related to the artifact (javadoc, PDF)"/>
+		<conf name="dist" visibility="public" description="Contains extra files like README.md, licenses"/>
+		<conf name="source" visibility="public" description="Source code"/>
+		<conf name="embedded" visibility="private" description="platform dependencies.  Use only for MicroEJ Architecture and MicroEJ Packs required to build the platform."/>
+    </configurations>
 
 	<publications/>
 

@@ -2,7 +2,7 @@
 <!--
 	ANT
 	
-	Copyright 2015-2020 MicroEJ Corp. All rights reserved.
+	Copyright 2015-2021 MicroEJ Corp. All rights reserved.
 	This library is provided in source code for use, modification and test, subject to license terms.
 	Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
 -->
@@ -28,7 +28,7 @@
 			</condition>
 		</fail>
 		<echo message="Execution of script '${deploy.bsp.runscript.filename}' started..." />
-		<exec executable="${deploy.bsp.runscript.filename}" failonerror="true" />
+		<exec dir="${application.dir}" executable="${deploy.bsp.runscript.filename}" failonerror="true" />
 		<echo message="Execution of script '${deploy.bsp.runscript.filename}' done." />
 	</target>
 
