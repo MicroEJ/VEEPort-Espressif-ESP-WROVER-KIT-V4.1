@@ -13,6 +13,18 @@ REM then resetting target device
 REM Reset ERRORLEVEL between multiple run in the same shell
 SET ERRORLEVEL=0
 
+REM Set APPLICATION_FILE before changing directory
+IF "%~1"=="" (
+	SET APPLICATION_FILE=%cd%\application.out
+) ELSE (
+	SET APPLICATION_FILE=%~f1
+)
+
+IF NOT EXIST "%APPLICATION_FILE%" (
+	echo FAILED - file '%APPLICATION_FILE%' does not exist
+	exit /B 1
+)
+
 REM Save application current directory and jump one level above scripts
 SET CURRENT_DIRECTORY=%CD%
 CD "%~dp0\..\"
@@ -39,6 +51,8 @@ IF [%ENV_FLASH_CMD%] == [] (
     ECHO "Environment variable 'ENV_FLASH_CMD' used to flash your IDF application is set to default value " %ENV_FLASH_CMD_DEFAULT%
 ) ELSE ECHO Environment variable 'ENV_FLASH_CMD' used to flash your IDF application is set to %ENV_FLASH_CMD% value
 
+COPY /Y %APPLICATION_FILE% "build\microej.elf"
+bash.exe -c "touch build/microej.elf"
 bash.exe -c %ENV_FLASH_CMD%
 
 REM Restore application directory

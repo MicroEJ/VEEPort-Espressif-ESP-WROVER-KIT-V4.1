@@ -11,6 +11,14 @@
 # 'run.sh' is responsible for flashing the executable file on the target device 
 # then resetting target device
 
+
+# Set APPLICATION_FILE before changing directory
+if [ -z "$1" ]; then
+    APPLICATION_FILE="$(pwd)/application.out"
+else
+    APPLICATION_FILE="$(cd $(dirname $1) ; pwd)/$(basename $1)"
+fi
+
 # Save application current directory and jump one level above scripts
 CURRENT_DIRECTORY=$(pwd)
 cd $(dirname "$0")/..
@@ -36,6 +44,8 @@ if [ -z "$ENV_FLASH_CMD" ]; then
 else
 	echo "Environment variable 'ENV_FLASH_CMD' used to flash your IDF application is set to $ENV_FLASH_CMD value"
 fi
+
+cp -v "${APPLICATION_FILE}" build/microej.elf
 
 eval $ENV_FLASH_CMD
 

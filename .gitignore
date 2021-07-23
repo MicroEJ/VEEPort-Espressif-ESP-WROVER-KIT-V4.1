@@ -26,8 +26,11 @@ ESP32-WROVER-Xtensa-FreeRTOS-fp/src/main/resources/.widget.xsd
 
 # Ignore dropins generated during the Platform build
 ## Platform Configuration Additions
+ESP32-WROVER-Xtensa-FreeRTOS-configuration/dropins/scripts/deployInBSPCommon.xml
 ESP32-WROVER-Xtensa-FreeRTOS-configuration/dropins/scripts/deployInBSP.xml
 ESP32-WROVER-Xtensa-FreeRTOS-configuration/dropins/scripts/deployToolBSPRun.microejTool
+ESP32-WROVER-Xtensa-FreeRTOS-configuration/dropins/scripts/deployToolBSPRun.microejTool.properties
+ESP32-WROVER-Xtensa-FreeRTOS-configuration/dropins/scripts/deployToolBSPRunExtension.jar
 ESP32-WROVER-Xtensa-FreeRTOS-configuration/dropins/scripts/fullLink.microejLaunch
 ESP32-WROVER-Xtensa-FreeRTOS-configuration/dropins/scripts/fullLink.microejLaunch.properties
 ESP32-WROVER-Xtensa-FreeRTOS-configuration/dropins/scripts/init-bsp/

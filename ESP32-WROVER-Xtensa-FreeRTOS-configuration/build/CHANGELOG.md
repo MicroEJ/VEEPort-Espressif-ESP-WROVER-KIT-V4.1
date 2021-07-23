@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - [2021-05-11]
+
+### Added
+
+- Add MicroEJ SDK tool to deploy an executable file on device using the BSP run script
+- Add an option to check if the platform project exists
+
+### Changed
+
+- Execute bash script file (`.sh`) with `/bin/bash`.  This ensure the build and run scripts are properly executed regardless of their file permissions.
+- Use placeholders for platform name and platform version in `default.platform` to make it obvious it is generated automatically.
+
 ## [1.2.0] - 2021-04-16
 
 ### Added
@@ -39,5 +51,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   
 ---
 _Copyright 2020-2021 MicroEJ Corp. All rights reserved._
-_This library is provided in source code for use, modification and test, subject to license terms._
-_Any modification of the source code will break MicroEJ Corp. warranties on the whole library._
+_Use of this source code is governed by a BSD-style license that can be found with this software._

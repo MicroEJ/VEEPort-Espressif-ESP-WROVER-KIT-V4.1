@@ -14,7 +14,7 @@
          - Update the `PLATFORM_VER` in all `README.rst` files and in the `RELEASE_NOTES.rst` file.
          - Update the `CHANGELOG.rst` and `RELEASE_NOTES.rst` to reflect the changes.
     -->
-	<info organisation="com.microej.platform.esp32.esp-wrover-kit-v41" module="Platform" status="integration" revision="1.8.0">
+	<info organisation="com.microej.platform.esp32.esp-wrover-kit-v41" module="Platform" status="integration" revision="1.8.1">
         <ea:build organisation="com.is2t.easyant.buildtypes" module="build-custom" revision="1.+"/>
     	<ea:plugin org="com.is2t.easyant.plugins" module="eclipse-antRunner" revision="1.+"/>
     	<ea:plugin org="com.is2t.easyant.plugins" module="mam" revision="1.+"/>
