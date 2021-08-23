@@ -2,7 +2,7 @@
 #
 # BASH
 #
-# Copyright 2020 MicroEJ Corp. All rights reserved.
+# Copyright 2020-2021 MicroEJ Corp. All rights reserved.
 # This library is provided in source code for use, modification and test, subject to license terms.
 # Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
 
@@ -41,6 +41,12 @@ fi
 
 eval $ENV_BASH_CMD
 cp build/microej.elf $CURRENT_DIRECTORY/application.out
+
+# Generate combined binary
+python "scripts/combine_binaries.py" "$CURRENT_DIRECTORY/combined.bin" \
+	$BOOTLOADER_BIN_OFFSET "build/bootloader/bootloader.bin" \
+	$PARTITIONS_BIN_OFFSET "build/partitions_no_ota_no_systemview.bin" \
+	$APPLICATION_BIN_OFFSET "build/microej.bin"
 
 # Restore application directory
 cd $CURRENT_DIRECTORY/

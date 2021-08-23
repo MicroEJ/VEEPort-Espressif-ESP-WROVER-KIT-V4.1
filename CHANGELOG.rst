@@ -8,6 +8,21 @@
 ===========
 
 ---------------------
+[1.8.2] - 2021-08-17
+---------------------
+
+Added
+=====
+
+- Generate combined binary after link.
+
+Fixed
+=====
+
+- PEM loader no longer loads multiple certificates.
+- Timeout on socket no longer raise an unknown error.
+
+---------------------
  [1.8.1] - 2021-07-22
 ---------------------
 

@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2019-2020 MicroEJ Corp. All rights reserved.
+ * Copyright 2019-2021 MicroEJ Corp. All rights reserved.
  * This library is provided in source code for use, modification and test, subject to license terms.
  * Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
  *
@@ -16,15 +16,24 @@
 // Use microej allocator to allocate SSL contextes in external ram
 #include "microej_allocator.h"
 #include <time.h>
-#include "ssl_utils.h"
 
+#define MBEDTLS_PLATFORM_C
 #define MBEDTLS_PLATFORM_MEMORY
 
 void* microej_calloc4tls(size_t nmemb, size_t size);
 void microej_free4tls(void *ptr);
 
-#define MBEDTLS_PLATFORM_TIME_MACRO custom_mbedtls_time_sec /**< Custom time (seconds) macro to use. */
+extern time_t custom_mbedtls_time(time_t *time);
+#define MBEDTLS_PLATFORM_TIME_MACRO custom_mbedtls_time /**< Custom time (seconds) macro to use. */
+#define MBEDTLS_HAVE_TIME
+#define MBEDTLS_HAVE_TIME_DATE
 #define MBEDTLS_PLATFORM_CALLOC_MACRO microej_calloc4tls
 #define MBEDTLS_PLATFORM_FREE_MACRO microej_free4tls
+
+#define mbedtls_calloc MBEDTLS_PLATFORM_CALLOC_MACRO
+#define mbedtls_free MBEDTLS_PLATFORM_FREE_MACRO
+
+#define MBEDTLS_ENTROPY_C
+#define MBEDTLS_CTR_DRBG_C
 
 #endif // !defined __MICROEJ_MBEDTLS_CONFIG_H__

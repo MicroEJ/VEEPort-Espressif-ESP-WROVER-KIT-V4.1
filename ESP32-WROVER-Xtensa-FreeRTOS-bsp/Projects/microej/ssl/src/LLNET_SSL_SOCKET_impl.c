@@ -1,31 +1,45 @@
 /*
  * C
  *
- * Copyright 2018-2020 MicroEJ Corp. All rights reserved.
+ * Copyright 2018-2021 MicroEJ Corp. All rights reserved.
  * This library is provided in source code for use, modification and test, subject to license terms.
  * Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
  */
 
-#include <LLNET_SSL_SOCKET_impl.h>
+/**
+ * @file
+ * @brief LLNET_SSL_SOCKET implementation over mbedtls.
+ * @author MicroEJ Developer Team
+ * @version 2.1.4
+ * @date 23 August 2021
+ */
 
-#include <LLNET_SSL_CONSTANTS.h>
-#include <LLNET_Common.h>
-#include "LLNET_CONSTANTS.h"
-#include "LLNET_CHANNEL_impl.h"
-#include "stdio.h"
-#include <net_ssl_errors.h>
-#include "microej_allocator.h"
-
+#if !defined(MBEDTLS_CONFIG_FILE)
+#include "mbedtls/config.h"
+#else
+#include MBEDTLS_CONFIG_FILE
+#endif
 #include "mbedtls/ssl.h"
 #include "mbedtls/net_sockets.h"
+#if defined(MBEDTLS_ENTROPY_C) && defined(MBEDTLS_CTR_DRBG_C)
 #include "mbedtls/entropy.h"
 #include "mbedtls/ctr_drbg.h"
-
-#include <LLNET_SSL_utils_mbedtls.h>
+#endif
+#include "LLNET_Common.h"
+#include "LLNET_CONSTANTS.h"
+#include "LLNET_CHANNEL_impl.h"
+#include "LLNET_SSL_ERRORS.h"
+#include "LLNET_SSL_utils_mbedtls.h"
+#include "LLNET_SSL_SOCKET_impl.h"
+#include "LLNET_SSL_CONSTANTS.h"
+#include <stdio.h>
 
 #ifdef __cplusplus
 	extern "C" {
 #endif
+
+/* external functions */
+extern int32_t LLNET_SSL_TranslateReturnCode(int32_t mbedtls_error);
 
 typedef struct
 {
@@ -33,12 +47,14 @@ typedef struct
 	uint32_t              closeNotifyFlag;
 } ssl_socket ;
 
-/* Global variable for entropy en drbg context */
+#if defined(MBEDTLS_ENTROPY_C) && defined(MBEDTLS_CTR_DRBG_C)
+/* Global variable for entropy in drbg context */
 mbedtls_ctr_drbg_context ctr_drbg;
 static mbedtls_entropy_context entropy;
 
 /* personalization string for the drbg */
 const char *DRBG_PERS = "mbed TLS microEJ client";
+#endif
 
 /* static functions */
 static int32_t LLNET_SSL_SOCKET_IMPL_initialHandShake(int32_t sslID, int32_t fd, uint8_t retry);
@@ -47,6 +63,7 @@ static int32_t asyncOperationWrapper(int32_t fd, SELECT_Operation operation, uin
 int32_t LLNET_SSL_SOCKET_IMPL_initialize(void){
 	LLNET_SSL_DEBUG_TRACE("%s()\n", __func__);
 
+#if defined(MBEDTLS_ENTROPY_C) && defined(MBEDTLS_CTR_DRBG_C)
     mbedtls_entropy_init(&entropy);
     mbedtls_ctr_drbg_init(&ctr_drbg);
 
@@ -55,17 +72,18 @@ int32_t LLNET_SSL_SOCKET_IMPL_initialize(void){
                       (const unsigned char *) DRBG_PERS,
                       sizeof (DRBG_PERS))) != 0) {
     	LLNET_SSL_DEBUG_MBEDTLS_TRACE("mbedtls_crt_drbg_init", ret);
-        return NET_SSL_TranslateReturnCode(ret);
+    	return LLNET_SSL_TranslateReturnCode(ret);
     }
+#endif
 
     return J_SSL_NO_ERROR;
 }
 
-int32_t LLNET_SSL_SOCKET_IMPL_create(int32_t contextID, int32_t fd, uint8_t* hostName, int32_t hostnameLen, uint8_t autoclose, uint8_t useClientMode, uint8_t needClientAuth, uint8_t retry){
+int32_t LLNET_SSL_SOCKET_IMPL_create(int32_t contextID, int32_t fd, uint8_t* hostname, int32_t hostnameLen, uint8_t autoclose, uint8_t useClientMode, uint8_t needClientAuth, uint8_t retry){
 	LLNET_SSL_DEBUG_TRACE("%s(context=%d, fd=%d, autoclose=%d, useClientMode=%d, needClientAuth=%d, retry=%d)\n", __func__, (int)contextID, (int)fd, autoclose, useClientMode, needClientAuth, retry);
 
 	mbedtls_ssl_config* conf = (mbedtls_ssl_config*)(contextID);
-	ssl_socket* ssl_ctx = (ssl_socket*)malloc(sizeof(ssl_socket));
+	ssl_socket* ssl_ctx = (ssl_socket*)mbedtls_calloc(1, sizeof(ssl_socket));
 
 	if ( conf != NULL && ssl_ctx != NULL)
 	{
@@ -79,25 +97,35 @@ int32_t LLNET_SSL_SOCKET_IMPL_create(int32_t contextID, int32_t fd, uint8_t* hos
 		}
 
 		mbedtls_ssl_init(&(ssl_ctx->ssl_context));
-		if ((NULL != hostName) && (hostnameLen > 0)) {
-            mbedtls_ssl_set_hostname(&(ssl_ctx->ssl_context), (char*)hostName);
-        }
+		if ((NULL != hostname) && (hostnameLen > 0)) {
+			/* Verify that the hostname is an IP or not. */
+			struct sockaddr_in host_addr;
+			int is_valid_addr = inet_pton(AF_INET,(const char*) hostname, &(host_addr.sin_addr)) ||  inet_pton(AF_INET6,(const char*) hostname, &(host_addr.sin_addr));
+			if (!is_valid_addr) {
+				mbedtls_ssl_set_hostname(&(ssl_ctx->ssl_context), (char*)hostname);
+			}
+		}
 		ssl_ctx->closeNotifyFlag = 0;
 
 		int ret = 0;
 		if ((ret = mbedtls_ssl_setup(&(ssl_ctx->ssl_context), conf)) != 0) {
+		    mbedtls_ssl_free(&(ssl_ctx->ssl_context));
+		    mbedtls_free((void*)ssl_ctx);
 			LLNET_SSL_DEBUG_MBEDTLS_TRACE("mbedtls_ssl_setup", ret);
 			return J_CREATE_SSL_ERROR; //error
 		}
 
-		int* net_socket = (int*)malloc(sizeof(int));
+		int* net_socket = (int*)mbedtls_calloc(1, sizeof(int));
 		if (net_socket != NULL)
 		{
 			*(net_socket) = fd;
 			mbedtls_ssl_set_bio(&(ssl_ctx->ssl_context), (void*)net_socket, LLNET_SSL_utils_mbedtls_send, LLNET_SSL_utils_mbedtls_recv, NULL );
 		}
-		else
+		else{
+		    mbedtls_ssl_free(&(ssl_ctx->ssl_context));
+		    mbedtls_free((void*)ssl_ctx);
 			return J_CREATE_SSL_ERROR;
+		}
 	}
 	else
 		return J_CREATE_SSL_ERROR;
@@ -131,7 +159,6 @@ int32_t LLNET_SSL_SOCKET_IMPL_close(int32_t sslID, int32_t fd, uint8_t autoclose
 		        	LLNET_SSL_DEBUG_MBEDTLS_TRACE("mbedtls_ssl_close_notify", ret);
 		        }
 		    }
-		    mbedtls_ssl_session_reset(&(ssl_ctx->ssl_context));
 
 			//reset non-blocking mode
 		    if(was_non_blocking == false){
@@ -173,12 +200,12 @@ int32_t LLNET_SSL_SOCKET_IMPL_freeSSL(int32_t sslID, uint8_t retry){
 
 	//free BIO
 	if (ssl_ctx->ssl_context.p_bio) {
-		microej_free(ssl_ctx->ssl_context.p_bio);
+		mbedtls_free(ssl_ctx->ssl_context.p_bio);
 	}
 
 	//free SSL
     mbedtls_ssl_free(&(ssl_ctx->ssl_context));
-    microej_free((void*)ssl_ctx);
+    mbedtls_free((void*)ssl_ctx);
 
 	return J_SSL_NO_ERROR;
 }
@@ -209,26 +236,18 @@ int32_t LLNET_SSL_SOCKET_IMPL_read(int32_t sslID, int32_t fd, int8_t* buf, int32
 	}
 
 	ssl_socket* ssl_ctx = (ssl_socket*)(sslID);
-	if (ssl_ctx == NULL)
+	if (NULL == ssl_ctx)
 		return J_CREATE_SSL_ERROR;
 
     /* Read data out of the socket */
     int ret = mbedtls_ssl_read(&(ssl_ctx->ssl_context), (unsigned char *) buf + off, len);
     if (ret < 0) {
-        if (ret == MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY){
-            ssl_ctx->closeNotifyFlag = 1;
-            //restore original flags
-            if(was_non_blocking == false){
-                res = set_socket_non_blocking(fd, false);
-                if(res != 0){
-                    LLNET_SSL_DEBUG_TRACE("%s res=J_SOCKET_ERROR\n", __func__);
-                    return J_SOCKET_ERROR;
-                }
-            }
+    	if (MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY == ret){
+    		ssl_ctx->closeNotifyFlag = 1;
     		//end-of-file
     		return J_EOF;
     	}
-    	else if (ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE) {
+    	else if (MBEDTLS_ERR_SSL_WANT_READ != ret && MBEDTLS_ERR_SSL_WANT_WRITE != ret) {
     		LLNET_SSL_DEBUG_MBEDTLS_TRACE("mbedtls_ssl_read", ret);
         }
     }
@@ -251,7 +270,7 @@ int32_t LLNET_SSL_SOCKET_IMPL_read(int32_t sslID, int32_t fd, int8_t* buf, int32
 			//read operation can also cause write operation when the peer requests a re-negotiation
 			 return asyncOperationWrapper(fd, SELECT_WRITE, retry);
 		}
-		return NET_SSL_TranslateReturnCode(ret);
+		return LLNET_SSL_TranslateReturnCode(ret);
 	}
 
 	return ret;
@@ -271,17 +290,17 @@ int32_t LLNET_SSL_SOCKET_IMPL_write(int32_t sslID, int32_t fd, int8_t* buf, int3
 	}
 
 	ssl_socket* ssl_ctx = (ssl_socket*)(sslID);
-	if (ssl_ctx == NULL)
+	if (NULL == ssl_ctx)
 		return J_CREATE_SSL_ERROR;
 
     int ret = mbedtls_ssl_write(&(ssl_ctx->ssl_context), (const unsigned char *) buf + off, len);
     if (ret < 0) {
-    	if (ret == MBEDTLS_ERR_NET_CONN_RESET){
+    	if (MBEDTLS_ERR_NET_CONN_RESET == ret){
     		/* Set ret to 0 for re*/
     		return J_CONNECTION_RESET;
     	}
-    	else if (ret != MBEDTLS_ERR_SSL_WANT_READ &&
-            ret != MBEDTLS_ERR_SSL_WANT_WRITE) {
+    	else if (MBEDTLS_ERR_SSL_WANT_READ != ret &&
+    			MBEDTLS_ERR_SSL_WANT_WRITE != ret) {
         	LLNET_SSL_DEBUG_MBEDTLS_TRACE("mbedtls_ssl_write", ret);
         }
     }
@@ -304,7 +323,7 @@ int32_t LLNET_SSL_SOCKET_IMPL_write(int32_t sslID, int32_t fd, int8_t* buf, int3
 		else if(ret == MBEDTLS_ERR_SSL_WANT_WRITE){
 			 return asyncOperationWrapper(fd, SELECT_WRITE, retry);
 		}
-		return NET_SSL_TranslateReturnCode(ret);
+		return LLNET_SSL_TranslateReturnCode(ret);
 	}
 
 	return ret;
@@ -314,7 +333,7 @@ int32_t LLNET_SSL_SOCKET_IMPL_available(int32_t sslID, uint8_t retry){
 	LLNET_SSL_DEBUG_TRACE("%s(ssl=%d, retry=%d)\n", __func__, (int)sslID, retry);
 
 	ssl_socket* ssl_ctx = (ssl_socket*)(sslID);
-	if (ssl_ctx == NULL)
+	if (NULL == ssl_ctx)
 		return J_CREATE_SSL_ERROR;
 
     int ret = (int) mbedtls_ssl_get_bytes_avail( &(ssl_ctx->ssl_context) );
@@ -337,22 +356,22 @@ static int32_t LLNET_SSL_SOCKET_IMPL_initialHandShake(int32_t sslID, int32_t fd,
 	}
 
 	ssl_socket* ssl_ctx = (ssl_socket*)(sslID);
-	if (ssl_ctx == NULL)
+	if (NULL == ssl_ctx)
 		return J_CREATE_SSL_ERROR;
 
     int ret = mbedtls_ssl_handshake(&(ssl_ctx->ssl_context));
     if (ret < 0) {
-        if (ret != MBEDTLS_ERR_SSL_WANT_READ &&
-            ret != MBEDTLS_ERR_SSL_WANT_WRITE)
+        if (MBEDTLS_ERR_SSL_WANT_READ != ret &&
+        		MBEDTLS_ERR_SSL_WANT_WRITE != ret)
         {
         	LLNET_SSL_DEBUG_MBEDTLS_TRACE("mbedtls_ssl_handshake", ret);
 
         	/* Send bad cert alert if no cert available */
-        	if (ret == MBEDTLS_ERR_SSL_CA_CHAIN_REQUIRED){
+        	if (MBEDTLS_ERR_SSL_CA_CHAIN_REQUIRED == ret){
 				int32_t retAlert = 0;
-				if( (retAlert = mbedtls_ssl_send_alert_message( &(ssl_ctx->ssl_context),
+				if (0 != (retAlert = mbedtls_ssl_send_alert_message( &(ssl_ctx->ssl_context),
 								MBEDTLS_SSL_ALERT_LEVEL_FATAL,
-								MBEDTLS_SSL_ALERT_MSG_BAD_CERT) ) != 0 )
+								MBEDTLS_SSL_ALERT_MSG_BAD_CERT)))
 				{
 					printf("ERROR : failed to send alert_message : ret = %d", retAlert);
 				}
@@ -366,22 +385,22 @@ static int32_t LLNET_SSL_SOCKET_IMPL_initialHandShake(int32_t sslID, int32_t fd,
     LLNET_SSL_DEBUG_TRACE("%s HandShake (ssl=%d, fd=%d, retry=%d) ret=%d\n", __func__, (int)sslID, (int)fd, (int)retry, (int)ret);
 
 	//restore original flags
-    if(was_non_blocking == false){
+    if(false == was_non_blocking){
 		res = set_socket_non_blocking(fd, false);
-		if(res != 0){
+		if(0 != res){
 			return J_SOCKET_ERROR;
 		}
     }
 
-	if(ret != 0){
-		if(ret == MBEDTLS_ERR_SSL_WANT_READ){
+	if(0 != ret){
+		if(MBEDTLS_ERR_SSL_WANT_READ == ret){
 			 return asyncOperationWrapper(fd, SELECT_READ, retry);
 		}
-		else if(ret == MBEDTLS_ERR_SSL_WANT_WRITE){
+		else if(MBEDTLS_ERR_SSL_WANT_WRITE == ret){
 			 return asyncOperationWrapper(fd, SELECT_WRITE, retry);
 		}
 
-		return NET_SSL_TranslateReturnCode(ret);
+		return LLNET_SSL_TranslateReturnCode(ret);
 	}
 
 	return ret;
@@ -390,13 +409,13 @@ static int32_t LLNET_SSL_SOCKET_IMPL_initialHandShake(int32_t sslID, int32_t fd,
 static int32_t asyncOperationWrapper(int32_t fd, SELECT_Operation operation, uint8_t retry){
 	int32_t ret = asyncOperation(fd, operation, retry);
 
-	if (ret == J_NET_NATIVE_CODE_BLOCKED_WITHOUT_RESULT){
+	if (J_NET_NATIVE_CODE_BLOCKED_WITHOUT_RESULT == ret){
 		return J_NATIVE_CODE_BLOCKED_WITHOUT_RESULT;
-	} else if (ret == J_ASYNC_BLOCKING_REQUEST_QUEUE_LIMIT_REACHED){
+	} else if (J_ASYNC_BLOCKING_REQUEST_QUEUE_LIMIT_REACHED == ret){
 		return J_BLOCKING_QUEUE_LIMIT_REACHED;
-	} else if (ret == J_ETIMEDOUT){
+	} else if (J_ETIMEDOUT == ret){
 		return J_SOCKET_TIMEOUT;
-	} else if (ret == J_EUNKNOWN){
+	} else if (J_EUNKNOWN == ret){
 		return J_UNKNOWN_ERROR;
 	} else {
 		return ret;

@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2016-2020 MicroEJ Corp. All rights reserved.
+ * Copyright 2016-2021 MicroEJ Corp. All rights reserved.
  * This library is provided in source code for use, modification and test, subject to license terms.
  * Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
  */
@@ -23,6 +23,7 @@
 #include "LLNET_ERRORS.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <stdio.h>
 
 #ifndef USE_IOCTL_FOR_BLOCKING_OPTION
 #include <fcntl.h>
@@ -67,7 +68,7 @@ int32_t asyncOperation(int32_t fd, SELECT_Operation operation, uint8_t retry){
 				timeout = absolute_timeout - current_time;
 			}
 		} else {
-			return J_EUNKNOWN;
+			return J_ETIMEDOUT;
 		}
 	}
 	int32_t res = async_select(fd, operation, timeout, NULL);

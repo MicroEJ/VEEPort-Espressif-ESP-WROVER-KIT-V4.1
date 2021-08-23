@@ -2,7 +2,7 @@
 #
 # BASH
 #
-# Copyright 2020 MicroEJ Corp. All rights reserved.
+# Copyright 2020-2021 MicroEJ Corp. All rights reserved.
 # This library is provided in source code for use, modification and test, subject to license terms.
 # Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
 
@@ -36,3 +36,8 @@ fi
 
 # Add xtensa tool chain to path
 export PATH=$XTENSA_PATH/bin:${PATH}
+
+# Set offsets for combined binary
+BOOTLOADER_BIN_OFFSET=0x1000
+PARTITIONS_BIN_OFFSET=0x8000
+APPLICATION_BIN_OFFSET=0x10000

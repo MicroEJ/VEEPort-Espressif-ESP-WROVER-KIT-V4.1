@@ -2,7 +2,7 @@
 SETLOCAL ENABLEEXTENSIONS
 
 REM BAT
-REM Copyright 2020 MicroEJ Corp. All rights reserved.
+REM Copyright 2020-2021 MicroEJ Corp. All rights reserved.
 REM This library is provided in source code for use, modification and test, subject to license terms.
 REM Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
 
@@ -50,11 +50,15 @@ bash.exe -c %ENV_BASH_CMD% && COPY "build\microej.elf" "%CURRENT_DIRECTORY%\appl
 	SET ERRORLEVEL=1
 )
 
-REM Restore application directory
-CD "%CURRENT_DIRECTORY%"
-
 IF %ERRORLEVEL% NEQ 0 (
 	EXIT /B %ERRORLEVEL%
 )
 
+REM Generate combined binary
+python.exe "scripts\combine_binaries.py" "%CURRENT_DIRECTORY%\combined.bin" ^
+	%BOOTLOADER_BIN_OFFSET% "build\bootloader\bootloader.bin" ^
+	%PARTITIONS_BIN_OFFSET% "build\partitions_no_ota_no_systemview.bin" ^
+	%APPLICATION_BIN_OFFSET% "build\microej.bin"
 
+REM Restore application directory
+CD "%CURRENT_DIRECTORY%"
