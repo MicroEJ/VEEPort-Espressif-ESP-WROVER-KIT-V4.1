@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	ANT
+	
+	Copyright 2015-2021 IS2T. All rights reserved.
+	Modification and distribution is permitted under certain conditions.
+	IS2T PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+-->
+
+<project name="firmwareLinker" default="run">
+	
+	
+		
+	<fail unless="platform.dir"/>
+	<property name="scripts.dir" value="${platform.dir}/scripts"/>
+	<property name="tools.dir" location="${platform.dir}/tools"/>
+	<fail unless="output.dir"/>
+	<fail unless="executable.filename" description="Firmware input executable filename"/>
+	<fail unless="feature.filename" description="Feature input filename (.fo) to be linked"/>
+	<fail unless="firmware.output.name" description="Firmware output name"/>
+	<property name="firmware.output.dir" value="${output.dir}"/>
+		
+	<import file="${scripts.dir}/activity.xml"/>
+	<dirname file="${ant.file.firmwareLinker}" property="firmwareLinker.dir"/>
+	<import file="${firmwareLinker.dir}/firmwareLinkerPathDefinition.xml"/>
+
+	<loadproperties srcfile="${platform.dir}/scripts/core.properties"/>
+	<loadproperties srcfile="${platform.dir}/scripts/partialLink.properties" prefix="linker"/>
+		
+	<fail unless="arch.symbol.prefix"/>
+	
+	<property name="linker.dir" location="${platform.dir}/linker"/>
+	
+	<property name="firmware.dump.output.name" value="sizes.lscf"/>
+	<property name="feature.link.output.name" value="systemapp"/>
+	
+	<path id="linker.classpath.path">
+		<fileset dir="${linker.dir}" includes="Linker*.jar"/>
+		<fileset dir="${linker.dir}" excludes="Linker*-kf.jar"/>
+	</path>
+	<taskdef name="linker" classname="${linker.classname}" classpathref="linker.classpath.path"/>
+	
+	
+	<taskdef name="firmwareLinker" classname="com.is2t.kf.firmwarelinker.FirmwareLinkerTask" classpathref="firmwareLinker.classpath.path"/>
+
+	<target name="init">	
+		<start.activity
+			activity.id="firmwareLinker"
+			message="Firmware Linker"
+		/>
+		<property name="firmwarelinker.output.dir" value="${output.dir}/firmwarelinker"/>
+		<delete dir="${firmwarelinker.output.dir}" failonerror="false"/>
+		<mkdir dir="${firmwarelinker.output.dir}"/>
+		<property name="firmware.tmp.output.name" value="${firmware.output.name}.tmp"/>
+		<delete file="${firmware.output.dir}/${firmware.tmp.output.name}"/>
+		<property name="firmware.output.file" location="${firmware.output.dir}/${firmware.output.name}"/>
+	</target>
+	
+	<target name="firmware/dump" depends="init">
+		<condition property="firmwareLinker.dump.verbose.level" value="9" else="0">
+			<isset property="execution.verbose"/>
+		</condition>
+		<firmwareLinker 
+			mode="dump" 
+			executableFile="${executable.filename}" 
+			outputDir="${firmwarelinker.output.dir}" 
+			outputName="${firmware.dump.output.name}"
+			verboseLevel="${firmwareLinker.dump.verbose.level}"
+			symbolPrefix="${arch.symbol.prefix}"
+		/>		
+	</target>
+	
+	<target name="feature/link" depends="firmware/dump">
+		<condition property="firmwareLinker.linker.verbose.level" value="2" else="0">
+			<isset property="execution.verbose"/>
+		</condition>
+		<condition property="firmwareLinker.linker.noWarning" value="true" else="false">
+			<not>
+				<isset property="execution.verbose"/>
+			</not>
+		</condition>
+		<linker
+			linkPath="${scripts.dir}/firmwareLinker${path.separator}${firmwarelinker.output.dir}" 
+			outputArchitecture="SOAR" 
+			endianness="${arch.endianness}"
+			partial="false" 
+			toDir="${firmwarelinker.output.dir}"
+			outputName="${feature.link.output.name}"
+			verboseLevel="${firmwareLinker.linker.verbose.level}"
+			noWarning="${firmwareLinker.linker.noWarning}"
+			symbolPrefix="${arch.symbol.prefix}"
+		>
+			<path location="${feature.filename}"/>
+		</linker>
+	</target>
+	
+	<target name="firmware/link" depends="feature/link">
+		<condition property="firmwareLinker.link.verbose.level" value="9" else="1">
+			<isset property="execution.verbose"/>
+		</condition>
+		<firmwareLinker 
+			mode="link" 
+			executableFile="${executable.filename}" 
+			featureFile="${firmwarelinker.output.dir}/${feature.link.output.name}.out" 
+			outputDir="${firmware.output.dir}" 
+			outputName="${firmware.tmp.output.name}"
+			verboseLevel="${firmwareLinker.link.verbose.level}"
+			symbolPrefix="${arch.symbol.prefix}"
+		/>
+		<!-- 
+			Copy the temporary output file to replace the final output file.
+			We don't generate the result directly in the final output file (${firmware.output.name}) 
+			because it may be the same file as the input file (${executable.filename}).
+		-->
+		<echo message="Copy generated file to ${firmware.output.file}"/>
+		<copy file="${firmware.output.dir}/${firmware.tmp.output.name}" toFile="${firmware.output.file}"/>
+		<!-- Delete temporary output file -->
+		<delete file="${firmware.output.dir}/${firmware.tmp.output.name}" failonerror="false"/>
+	</target>
+	
+	<target name="clean" if="clean.extrafiles">
+		<delete dir="${firmwarelinker.output.dir}" failonerror="false"/>
+	</target>
+
+	<target name="run" depends="firmware/link,clean"/>
+
+</project>

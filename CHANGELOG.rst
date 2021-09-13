@@ -8,6 +8,15 @@
 ===========
 
 ---------------------
+[1.8.3] - 2021-09-06
+---------------------
+
+Fixed
+=====
+
+- Fix firmware linker error when output binary path is same as input binary path.
+
+---------------------
 [1.8.2] - 2021-08-17
 ---------------------
 
