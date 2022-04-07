@@ -1,7 +1,7 @@
 <!--
 	IVY
 
-	Copyright 2018-2021 MicroEJ Corp. All rights reserved.
+	Copyright 2018-2022 MicroEJ Corp. All rights reserved.
 	This library is provided in source code for use, modification and test, subject to license terms.
 	Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
 -->
@@ -15,7 +15,7 @@
          - Update the `PLATFORM_VER` in all `README.rst` files and in the `RELEASE_NOTES.rst` file.
          - Update the `CHANGELOG.rst` and `RELEASE_NOTES.rst` to reflect the changes.
     -->
-	<info organisation="com.microej.platform.esp32.esp-wrover-kit-v41" module="Platform" status="integration" revision="1.8.3">
+	<info organisation="com.microej.platform.esp32.esp-wrover-kit-v41" module="Platform" status="integration" revision="1.8.4">
         <ea:build organisation="com.is2t.easyant.buildtypes" module="build-custom" revision="1.+"/>
     	<ea:plugin org="com.is2t.easyant.plugins" module="eclipse-antRunner" revision="1.+"/>
     	<ea:plugin org="com.is2t.easyant.plugins" module="mam" revision="1.+"/>
@@ -56,7 +56,7 @@
 		<dependency org="com.microej.architecture.ESP32" name="esp_idf-impl" rev="1.1.1" transitive="false"/>
 		<dependency org="com.microej.architecture.ESP32" name="esp_idf-mock" rev="1.1.2" transitive="false"/>
 		
-		<!-- CCO begin -->
+		<!-- CCO begin
 		<dependency org="com.microej.clibrary.llimpl" name="trace-systemview" rev="2.1.1" transitive="false"/>
 		<dependency org="com.microej.clibrary.platform" name="osal-headers" rev="0.2.1" transitive="false"/>
 		<dependency org="com.microej.clibrary.platform" name="osal-FreeRTOS" rev="0.2.2" transitive="false"/>
@@ -64,7 +64,7 @@
 		<dependency org="com.microej.clibrary.platform" name="bsp-microej-async-worker" rev="0.2.1" transitive="false"/>
 		<dependency org="com.microej.clibrary.llimpl" name="esp_idf" rev="1.1.1" transitive="false"/>
 		<dependency org="com.microej.clibrary.llimpl" name="net-ssl-mbedtls" rev="2.1.4"/>
-		<!-- CCO end -->
+		     CCO end -->
 	</dependencies>
 
 </ivy-module>

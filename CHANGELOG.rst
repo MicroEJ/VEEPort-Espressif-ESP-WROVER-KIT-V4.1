@@ -1,11 +1,20 @@
 ..
-    Copyright 2019-2021 MicroEJ Corp. All rights reserved.
+    Copyright 2019-2022 MicroEJ Corp. All rights reserved.
     This library is provided in source code for use, modification and test, subject to license terms.
     Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
 
 ===========
  Changelog
 ===========
+
+---------------------
+[1.8.4] - 2022-04-07
+---------------------
+
+Fixed
+=====
+
+- Comment C component dependencies in the `-configuration/module.ivy` file.
 
 ---------------------
 [1.8.3] - 2021-09-06

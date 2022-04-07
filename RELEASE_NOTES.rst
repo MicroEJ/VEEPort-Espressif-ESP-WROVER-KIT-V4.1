@@ -1,12 +1,12 @@
 ..
-    Copyright 2019-2021 MicroEJ Corp. All rights reserved.
+    Copyright 2019-2022 MicroEJ Corp. All rights reserved.
 	This library is provided in source code for use, modification and test, subject to license terms.
 	Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
 
 .. |BOARD_NAME| replace:: ESP-WROVER-KIT V4.1
 .. |BOARD_REVISION| replace:: 4.1
 .. |PLATFORM_NAME| replace:: ESP32 WROVER Platform
-.. |PLATFORM_VER| replace:: 1.8.3
+.. |PLATFORM_VER| replace:: 1.8.4
 .. |RCP| replace:: MICROEJ SDK
 .. |PLATFORM| replace:: MicroEJ Platform
 .. |PLATFORMS| replace:: MicroEJ Platforms
