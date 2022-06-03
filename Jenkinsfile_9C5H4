@@ -1,14 +1,13 @@
 /**
  * Copyright 2021-2022 MicroEJ Corp. All rights reserved.
- * This library is provided in source code for use, modification and test, subject to license terms.
- * Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
+ * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
 buildWithMMM{
 	MODULE_DIR = 'ESP32-WROVER-Xtensa-FreeRTOS-configuration'
 	//MODULE_FILENAME = ''			// The module filename. Default value is : module.ivy. Set it if yours is different.
-	//LABEL = 'SRV2BULD224'					// The label where build must be run. Default value is : docker if in docker build or generic. Set it if yours is different.
-	DOCKER_IMAGE = 'artifactory.cross:18084/microej/sdk-esp_idf_v3_3_4'
+	//LABEL = ''					// The label where build must be run. Default value is : docker if in docker build or generic. Set it if yours is different.
+	DOCKER_IMAGE = 'artifactory.cross:18084/microej/sdk-esp_idf_v4_3_2'
 
 	//MMM_VERSION = ''				// The version of MMM to use. Default value is 5.5.0.
 	ANT_PROPERTIES = '-Dmmm.module.name=9C5H4 -Dcom.microej.platformbuilder.bsp.build.enabled=true -Dcom.microej.platformbuilder.module.multi.enabled=false -Dcom.microej.platformbuilder.architecture.usage=prod -Dskip.publish=false'
@@ -18,8 +17,7 @@ buildWithMMM{
 	//PATTERN_JUNIT = ''			// The pattern Junit for test report. This default value is : '**/target~/test/xml/**/*test-report.xml, **/target~/test/xml/**/*Test.xml'. Set it if you want to use different one.
 
 	ENVIRONMENT_VARIABLES = [
-	    'APPLY_FIRST_BSP_COMPILE_HOOKS': 'true',
-	    'ENV_BASH_CMD': 'echo IDF_PATH=${IDF_PATH} && make -j4 all'
+	    'APPLY_FIRST_BSP_COMPILE_HOOKS': 'true'
 	]
 
 	//DOWNSTREAM_JOBS = [[			// The list of jobs to launch at the last stage of the job. If not set, does nothing.

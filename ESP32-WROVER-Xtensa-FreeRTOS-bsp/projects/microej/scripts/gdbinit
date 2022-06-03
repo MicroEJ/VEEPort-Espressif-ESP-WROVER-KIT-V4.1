@@ -1,0 +1,25 @@
+# Copyright 2020-2022 MicroEJ Corp. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be found with this software.
+
+
+set pagination off
+
+# connect to the OCD server 
+target remote :3333
+
+# reset the board and flush registers
+mon reset halt
+flushregs
+
+# Put a temporary breakpoint at the label from the app_main file 
+# and asociate this breakpoint with the sysview start logging commands,
+# then continue execution of the program.
+# The sysview logging is will be automatically stopped when the summed 
+# size of both log files will be 100000 bytes (you can change this attribute)
+tb app_main:start_sysview_logging
+commands
+mon esp sysview start file://../trace/systemview/uEJ_c1.svdat file://../trace/systemview/uEJ_c2.svdat 1 100000
+c
+end
+
+c

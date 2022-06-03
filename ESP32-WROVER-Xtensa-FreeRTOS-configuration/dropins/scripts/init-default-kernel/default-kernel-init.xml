@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Copyright 2021-2022 MicroEJ Corp. All rights reserved.
+	This library is provided in source code for use, modification and test, subject to license terms.
+	Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
+-->
+<project name="init-default-kernel-init">
+	<import file="${scripts.dir}/extension-init.xml"/>
+
+	<target name="init/init-default-kernel-property">
+		<condition property="no.kernel.in.classpath">
+			<and>
+				<isset property="onS3"/>
+				<not><available classpath="${application.classpath}" resource="kernel.kf"/></not>
+			</and>
+		</condition>
+	</target>
+
+	<target name="init/init-default-kernel" extensionOf="init/execution" if="no.kernel.in.classpath" depends="init/init-default-kernel-property">
+		<echo message="Using default Platform kernel.kf"/>
+		<augment id="init.application.classpath">
+			<path location="${platform.dir}/resources/default-kernel"/>
+		</augment>
+	</target>
+</project>

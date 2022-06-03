@@ -653,3 +653,4 @@ ESP32-WROVER-Xtensa-FreeRTOS-bsp/Projects/microej/platform/lib/microejruntime.a
 ESP32-WROVER-Xtensa-FreeRTOS-configuration/dropins/javaLibs/bluetooth-2.1.jar
 images/testsuite_plug_uart_wrover.JPG
 images/esp-wrover-kit-v4.1-front.jpg
+ESP32-WROVER-Xtensa-FreeRTOS-configuration/build/module/module-dropins/scripts/deployToolBSPRunExtension.jar

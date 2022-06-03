@@ -1,12 +1,11 @@
 ..
     Copyright 2019-2022 MicroEJ Corp. All rights reserved.
-	This library is provided in source code for use, modification and test, subject to license terms.
-	Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
+    Use of this source code is governed by a BSD-style license that can be found with this software.
 
 .. |BOARD_NAME| replace:: ESP-WROVER-KIT V4.1
 .. |BOARD_REVISION| replace:: 4.1
 .. |PLATFORM_NAME| replace:: ESP32 WROVER Platform
-.. |PLATFORM_VER| replace:: 1.8.4
+.. |PLATFORM_VER| replace:: 2.0.0
 .. |RCP| replace:: MICROEJ SDK
 .. |PLATFORM| replace:: MicroEJ Platform
 .. |PLATFORMS| replace:: MicroEJ Platforms
@@ -16,7 +15,7 @@
 .. |RTOS| replace:: FreeRTOS RTOS
 .. |MANUFACTURER| replace:: Espressif
 
-.. _README MicroEJ BSP: ./ESP32-WROVER-Xtensa-FreeRTOS-bsp/Projects/microej/README.rst
+.. _README MicroEJ BSP: ./ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/README.rst
 .. _RELEASE NOTES: ./RELEASE_NOTES.rst
 .. _CHANGELOG: ./CHANGELOG.rst
 
@@ -49,22 +48,24 @@ This |PLATFORM| contains the following dependencies:
    
    * - Dependency Name
      - Version
-   * - Architecture (simikou2)
-     - 7.14.0
-   * - UI Pack (simikou2UI)
-     - 12.1.5
+   * - Architecture (simikou6)
+     - 7.16.1
+   * - UI Pack (simikou6UI)
+     - 13.1.0
    * - NET Pack
-     - 9.2.3
+     - 10.1.0
    * - NET-ADDONS Pack
-     - 2.3.0
+     - 2.5.3
    * - HAL Pack
      - 2.0.2
    * - BLUETOOTH Pack
-     - 2.1.0
+     - 2.2.1
    * - FS Pack
-     - 4.0.3
+     - 6.0.1
    * - DEVICE Pack
      - 1.1.1
+   * - WATCHDOG-TIMER Pack
+     - 2.0.1
 
 Please refer to the |PLATFORM| `module description file <./ESP32-WROVER-Xtensa-FreeRTOS-configuration/module.ivy>`_ 
 for more details.
@@ -73,17 +74,17 @@ Board Support Package
 ---------------------
 
 - BSP provider: |MANUFACTURER| (``esp-idf``)
-- BSP version: v3.3.4
+- BSP version: v4.3.2
 
 Please refer to the |MANUFACTURER| ``esp-idf`` GitHub git repository
 available `here
-<https://github.com/espressif/esp-idf/releases/tag/v3.3.4>`__.
+<https://github.com/espressif/esp-idf/releases/tag/v4.3.2>`__.
 
 Third Party Software
 --------------------
 
 Third party softwares used in BSP can be found `here
-<https://github.com/espressif/esp-idf/tree/v3.3.4/components>`__. Here
+<https://github.com/espressif/esp-idf/tree/v4.3.2/components>`__. Here
 is a list of the most important ones:
 
 .. list-table::
@@ -91,16 +92,16 @@ is a list of the most important ones:
 
    * - RTOS 
      - FreeRTOS
-     - 8.2.0
+     - 10.2.1
    * - TCP/IP stack 
      - esp_lwip
-     - 2.0.3
+     - 2.1.2
    * - Cryptographic stack 
      - Mbed TLS
-     - 2.16.5
+     - 2.16.11
    * - File System stack 
      - FatFS
-     - R0.13a
+     - R0.13c
    * - Bluetooth stack 
      - BLUEDROID
      - N/A
@@ -127,7 +128,7 @@ dynamic image is an image decoded at runtime (PNG image) or an image created
 by the MicroEJ application using the ``Image.create(width, height)`` API.
 This buffer is located in external RAM.
 
-Leds
+LEDs
 ~~~~
 
 The board provides an RGB matrix with 3 colored LEDs (red, green ,
@@ -141,8 +142,7 @@ Network
 underlying hardware media.  A limited number of 16 sockets could be
 used for TCP connections, 16 for TCP listening (server) connections
 and 16 for UDP connections. A DHCP client can be activated to retrieve
-a dynamic IP address. All DNS requests can be handled by a MicroEJ
-software implementation or a native one.
+a dynamic IP address. All DNS requests are handled by LwIP.
 
 SSL
 -------
@@ -156,8 +156,10 @@ File System
 -------
 
 |PLATFORM| features a file system interface. An SD card is
-used for the storage (previously formated to a FAT32 file system). Up
-to 2 files can be opened simultaneously.
+used for the storage (previously formated to a FAT32 file system). It's 
+also possible to use SPI flash for storage. By default the file system 
+is set to be in the SD card (see ``File System`` section in `README MicroEJ BSP`_ 
+for more details). Up to 2 files can be opened simultaneously.
 
 
 Known issues/limitations
@@ -176,11 +178,10 @@ Known issues/limitations
 - OTA is enabled only on the Mono-Sandbox Platform. It has been disabled on the Multi-Sandbox Platform in order to fit into the FLASH memory.
 - As described in espressif documentation, LCD and microSD cannot be used at
   the same time without unsoldering the resistor R167 (`https://docs.espressif.com/projects/esp-idf/en/latest/esp32/hw-reference/esp32/get-started-wrover-kit.html#allocation-of-esp32-pins`).
-- On Windows, the toolchain doesn't support long path.  The build
-  directory (named ``target~/``) can be moved closer to the root
-  filesystem with the ``target`` property.  For example, set
-  ``target=C:/tmp/`` in
-  ``ESP32-WROVER-Xtensa-FreeRTOS-configuration/module.properties``.
+- On Windows, the toolchain doesn't support long paths. 
+  The build directory, set with the variable ``ESP_BUILD_DIR``, can be moved closer to the root of the filesystem. 
+  To override the default value create a copy of this file: ``ESP32-WROVER-Xtensa-FreeRTOS-bsp\projects\microej\scripts\set_local_env.bat.tpl``. 
+  Remove the ``.tpl`` at the end of the file name and set the variable ``ESP_BUILD_DIR``, for example with ``C:\tmp``, to prevent toolchain errors.
 
 Platform Memory Layout
 ======================
@@ -190,7 +191,7 @@ Memory Sections
 
 Each memory section is discribed in the GCC linker file available
 `here
-<https://github.com/espressif/esp-idf/blob/v3.3.4/components/esp32/ld/esp32.ld>`__
+<https://github.com/espressif/esp-idf/blob/v4.3.2/components/esp32/ld/esp32.ld>`__
 
 Memory Layout
 -------------
@@ -249,10 +250,10 @@ Memory Layout
 
 For the C heap, please refer to the |MANUFACTURER| documentation
 available `here
-<https://docs.espressif.com/projects/esp-idf/en/v3.3.4/api-reference/system/heap_debug.html#heap-information>`__
+<https://docs.espressif.com/projects/esp-idf/en/v4.3.2/api-reference/system/heap_debug.html#heap-information>`__
 
 Information on MicroEJ memory sections can be found `here
-<./ESP32-WROVER-Xtensa-FreeRTOS-bsp/Projects/microej/components/microej_gen/Makefile.projbuild>`__.
+<./ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/main/rename-sections.py>`__.
 
 Please also refer to the MicroEJ docs website page available `here
 <https://docs.microej.com/en/latest/PlatformDeveloperGuide/coreEngine.html#link>`__

@@ -1,11 +1,71 @@
 ..
     Copyright 2019-2022 MicroEJ Corp. All rights reserved.
-    This library is provided in source code for use, modification and test, subject to license terms.
-    Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
+    Use of this source code is governed by a BSD-style license that can be found with this software.
 
 ===========
  Changelog
 ===========
+
+---------------------
+ [2.0.0] - 2022-06-02
+---------------------
+
+Added
+=====
+
+- MicroEJ C Components:
+  - microui 1.1.0.
+  - mjvm-freertos 1.1.0.
+  - ned-bsd 1.3.1.
+  - ecom-wifi-generic 2.1.0.
+  - ecom-network-generic 2.2.1.
+  - microej-pool 0.1.0.
+  - bsp-microej-main 2.0.0.
+  - security-mbedtls 0.10.0.
+  - fs-generic 2.0.0.
+  - fs-fatfs 2.1.0.
+  - microej-time-freertos 0.1.0.
+  - net-ssl-mbedtls 2.1.5.
+  - net-bsd 1.3.1.
+  - watchdog-timer-generic 3.1.0
+  - watchdog-timer-checkpoint-freertos 2.0.1
+- MicroEJ Pack:
+  - watchdog-timer-pack 2.0.1
+
+Changed
+=======
+
+- Change license terms to MicroEJ Corp. BSD-style license.
+- Update frontpanel to framework 1.1.0.
+- Update frontpanel to widget 2.0.0.
+- Update modules:
+  - Pack UI 13.1.0.
+  - Pack FS 6.0.1.
+  - Pack Bluetooth 2.2.1.
+  - Pack net 10.1.0.
+  - Pack net-addons 2.5.3.
+- MicroEJ C Components:
+  - trace-systemview 2.1.2.
+  - osal-headers 1.0.0.
+  - osal-FreeRTOS 1.0.2.
+  - bsp-microej-async-worker 0.3.0.
+  - async_select 2.3.0.
+- Build scripts updated for use with ESP-IDF v4.
+- Update to toolchain GNUv84_extensa-esp32, simikou 6, rev. 7.16.1.
+- ESP-IDF Git submodule aligned with v4.3.2. 
+
+Removed
+=======
+
+- ECOM-COMM over SPI.
+- ECOM-COMM .jar and .h files in dropins.
+- Frontpanel framework 1.1.0.
+
+Fixed
+=====
+
+- Fix a DNS setting that caused an exception when trying to use a static IP configuration.
+- Fix build.sh if BSP fail build do not fail.
 
 ---------------------
 [1.8.4] - 2022-04-07
@@ -17,7 +77,7 @@ Fixed
 - Comment C component dependencies in the `-configuration/module.ivy` file.
 
 ---------------------
-[1.8.3] - 2021-09-06
+[1.8.3] - 2021-09-13
 ---------------------
 
 Fixed
