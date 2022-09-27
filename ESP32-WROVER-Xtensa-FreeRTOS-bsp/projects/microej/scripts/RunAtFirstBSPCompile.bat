@@ -24,6 +24,23 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 REM Set MicroEJ top level folder.
+CD "..\"
+
+REM Copy the patch file in the microej directory
+COPY /Y /Z /B "ui\src\WebP_MICROEJ.patch" "WebP_MICROEJ.patch"
+IF %ERRORLEVEL% NEQ 0 (
+	EXIT /B %ERRORLEVEL%
+)
+
+CMD /C git apply WebP_MICROEJ.patch
+
+REM Delete patch file.
+DEL  /F /Q WebP_MICROEJ.patch
+
+REM Restore current directory
+CD %CURRENT_DIR%
+
+REM Set MicroEJ top level folder.
 CD "..\..\.."
 
 REM Copy the patch file to the submodule directory (esp-idf)
@@ -42,10 +59,9 @@ DEL  /F /Q SYSVIEW-MicroEJ.patch
 
 IF %ERRORLEVEL% NEQ 0 (
 	EXIT /B %ERRORLEVEL%
+)
 
 REM Restore current directory
 CD %CURRENT_DIR%
-
-)
 
 exit /B 0

@@ -7,6 +7,7 @@
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/config/inc)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ssl/inc)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/libwebp)
 
 if (CMAKE_HOST_WIN32)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMBEDTLS_USER_CONFIG_FILE=<microej_mbedtls_config.h>")

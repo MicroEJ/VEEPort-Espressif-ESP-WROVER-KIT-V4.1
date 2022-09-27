@@ -17,6 +17,20 @@ cd $(dirname $(realpath $0))
 . "./set_project_env.sh"
 
 # Set MicroEJ top level folder.
+cd ../
+
+# Copy the patch file in the microej directory
+cp ui/src/WebP_MICROEJ.patch WebP_MICROEJ.patch
+
+git apply WebP_MICROEJ.patch
+
+# Delete patch file.
+rm WebP_MICROEJ.patch
+
+# Restore current directory
+cd $CURRENT_DIR
+
+# Set MicroEJ top level folder.
 cd ../../..
 
 # Copy the patch file to the submodule directory (esp-idf)

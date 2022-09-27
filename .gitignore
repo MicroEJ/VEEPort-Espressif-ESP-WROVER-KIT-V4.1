@@ -40,6 +40,8 @@ ESP32-WROVER-Xtensa-FreeRTOS-configuration/dropins/scripts/init-bsp/
 ESP32-WROVER-Xtensa-FreeRTOS-configuration/dropins/scripts/init-license-checker/
 ESP32-WROVER-Xtensa-FreeRTOS-configuration/dropins/tools/license-checker.jar
 ESP32-WROVER-Xtensa-FreeRTOS-configuration/dropins/workbenchExtension_launchScriptFramework.jar
+ESP32-WROVER-Xtensa-FreeRTOS-configuration/dropins/resources/os/
+ESP32-WROVER-Xtensa-FreeRTOS-configuration/dropins/tools/imageio-webp.jar
 ## bluetooth-pack
 ESP32-WROVER-Xtensa-FreeRTOS-configuration/dropins/include/LLBLUETOOTH_defines.h
 ESP32-WROVER-Xtensa-FreeRTOS-configuration/dropins/include/LLBLUETOOTH_impl.h

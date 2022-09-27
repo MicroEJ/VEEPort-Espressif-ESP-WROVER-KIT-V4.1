@@ -5,7 +5,7 @@
 .. |BOARD_NAME| replace:: ESP-WROVER-KIT V4.1
 .. |BOARD_REVISION| replace:: 4.1
 .. |PLATFORM_NAME| replace:: ESP32 WROVER Platform
-.. |PLATFORM_VER| replace:: 2.0.0
+.. |PLATFORM_VER| replace:: 2.1.0
 .. |RCP| replace:: MICROEJ SDK
 .. |PLATFORM| replace:: MicroEJ Platform
 .. |PLATFORMS| replace:: MicroEJ Platforms
@@ -51,7 +51,7 @@ This |PLATFORM| contains the following dependencies:
    * - Architecture (simikou6)
      - 7.16.1
    * - UI Pack (simikou6UI)
-     - 13.1.0
+     - 13.2.0
    * - NET Pack
      - 10.1.0
    * - NET-ADDONS Pack

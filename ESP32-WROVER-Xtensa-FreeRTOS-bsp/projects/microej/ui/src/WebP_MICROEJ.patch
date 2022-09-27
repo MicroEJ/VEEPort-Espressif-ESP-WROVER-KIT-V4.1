@@ -1,0 +1,142 @@
+diff --git a/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/dsp/dsp.h b/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/dsp/dsp.h
+index c4f57e4d..3759a033 100644
+--- a/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/dsp/dsp.h
++++ b/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/dsp/dsp.h
+@@ -14,7 +14,7 @@
+ #ifndef WEBP_DSP_DSP_H_
+ #define WEBP_DSP_DSP_H_
+ 
+-#ifdef HAVE_CONFIG_H
++#ifdef MICROEJ_HAVE_CONFIG_H //avoid esp-idf conflict
+ #include "src/webp/config.h"
+ #endif
+ 
+@@ -68,7 +68,7 @@ extern "C" {
+ # define __has_builtin(x) 0
+ #endif
+ 
+-#if !defined(HAVE_CONFIG_H)
++#if !defined(MICROEJ_HAVE_CONFIG_H) //avoid esp-idf conflict
+ #if defined(_MSC_VER) && _MSC_VER > 1310 && \
+     (defined(_M_X64) || defined(_M_IX86))
+ #define WEBP_MSC_SSE2  // Visual C++ SSE2 targets
+@@ -85,7 +85,7 @@ extern "C" {
+ // Files containing intrinsics will need to be built targeting the instruction
+ // set so should succeed on one of the earlier tests.
+ #if (defined(__SSE2__) || defined(WEBP_MSC_SSE2)) && \
+-    (!defined(HAVE_CONFIG_H) || defined(WEBP_HAVE_SSE2))
++    (!defined(MICROEJ_HAVE_CONFIG_H) || defined(WEBP_HAVE_SSE2))
+ #define WEBP_USE_SSE2
+ #endif
+ 
+@@ -94,7 +94,7 @@ extern "C" {
+ #endif
+ 
+ #if (defined(__SSE4_1__) || defined(WEBP_MSC_SSE41)) && \
+-    (!defined(HAVE_CONFIG_H) || defined(WEBP_HAVE_SSE41))
++    (!defined(MICROEJ_HAVE_CONFIG_H) || defined(WEBP_HAVE_SSE41))
+ #define WEBP_USE_SSE41
+ #endif
+ 
+@@ -108,7 +108,7 @@ extern "C" {
+ // The intrinsics currently cause compiler errors with arm-nacl-gcc and the
+ // inline assembly would need to be modified for use with Native Client.
+ #if ((defined(__ARM_NEON__) || defined(__aarch64__)) && \
+-     (!defined(HAVE_CONFIG_H) || defined(WEBP_HAVE_NEON))) && \
++     (!defined(MICROEJ_HAVE_CONFIG_H) || defined(WEBP_HAVE_NEON))) && \
+     !defined(__native_client__)
+ #define WEBP_USE_NEON
+ #endif
+diff --git a/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/enc/vp8li_enc.h b/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/enc/vp8li_enc.h
+index 00de4894..e9e79edd 100644
+--- a/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/enc/vp8li_enc.h
++++ b/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/enc/vp8li_enc.h
+@@ -14,7 +14,7 @@
+ #ifndef WEBP_ENC_VP8LI_ENC_H_
+ #define WEBP_ENC_VP8LI_ENC_H_
+ 
+-#ifdef HAVE_CONFIG_H
++#ifdef MICROEJ_HAVE_CONFIG_H //avoid esp-idf conflict
+ #include "src/webp/config.h"
+ #endif
+ // Either WEBP_NEAR_LOSSLESS is defined as 0 in config.h when compiling to
+diff --git a/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/utils/bit_reader_inl_utils.h b/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/utils/bit_reader_inl_utils.h
+index 404b9a6d..33223c95 100644
+--- a/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/utils/bit_reader_inl_utils.h
++++ b/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/utils/bit_reader_inl_utils.h
+@@ -16,7 +16,7 @@
+ #ifndef WEBP_UTILS_BIT_READER_INL_UTILS_H_
+ #define WEBP_UTILS_BIT_READER_INL_UTILS_H_
+ 
+-#ifdef HAVE_CONFIG_H
++#ifdef MICROEJ_HAVE_CONFIG_H //avoid esp-idf conflict
+ #include "src/webp/config.h"
+ #endif
+ 
+diff --git a/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/utils/bit_reader_utils.c b/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/utils/bit_reader_utils.c
+index 857cd609..7913eef1 100644
+--- a/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/utils/bit_reader_utils.c
++++ b/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/utils/bit_reader_utils.c
+@@ -11,7 +11,7 @@
+ //
+ // Author: Skal (pascal.massimino@gmail.com)
+ 
+-#ifdef HAVE_CONFIG_H
++#ifdef MICROEJ_HAVE_CONFIG_H //avoid esp-idf conflict
+ #include "src/webp/config.h"
+ #endif
+ 
+diff --git a/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/utils/endian_inl_utils.h b/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/utils/endian_inl_utils.h
+index 3630a293..625e188b 100644
+--- a/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/utils/endian_inl_utils.h
++++ b/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/utils/endian_inl_utils.h
+@@ -12,7 +12,7 @@
+ #ifndef WEBP_UTILS_ENDIAN_INL_UTILS_H_
+ #define WEBP_UTILS_ENDIAN_INL_UTILS_H_
+ 
+-#ifdef HAVE_CONFIG_H
++#ifdef MICROEJ_HAVE_CONFIG_H //avoid esp-idf conflict
+ #include "src/webp/config.h"
+ #endif
+ 
+@@ -27,7 +27,7 @@
+ #define HToLE16(x) (x)
+ #endif
+ 
+-#if !defined(HAVE_CONFIG_H)
++#if !defined(MICROEJ_HAVE_CONFIG_H)
+ #if LOCAL_GCC_PREREQ(4,8) || __has_builtin(__builtin_bswap16)
+ #define HAVE_BUILTIN_BSWAP16
+ #endif
+diff --git a/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/utils/thread_utils.h b/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/utils/thread_utils.h
+index 29ad49f7..78628642 100644
+--- a/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/utils/thread_utils.h
++++ b/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/utils/thread_utils.h
+@@ -14,7 +14,7 @@
+ #ifndef WEBP_UTILS_THREAD_UTILS_H_
+ #define WEBP_UTILS_THREAD_UTILS_H_
+ 
+-#ifdef HAVE_CONFIG_H
++#ifdef MICROEJ_HAVE_CONFIG_H //avoid esp-idf conflict
+ #include "src/webp/config.h"
+ #endif
+ 
+diff --git a/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/utils/utils.h b/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/utils/utils.h
+index ef04f108..2be6feca 100644
+--- a/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/utils/utils.h
++++ b/ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/thirdparty/libwebp/src/utils/utils.h
+@@ -15,7 +15,7 @@
+ #ifndef WEBP_UTILS_UTILS_H_
+ #define WEBP_UTILS_UTILS_H_
+ 
+-#ifdef HAVE_CONFIG_H
++#ifdef MICROEJ_HAVE_CONFIG_H //avoid esp-idf conflict
+ #include "src/webp/config.h"
+ #endif
+ 
+diff --git a/ESP32-WROVER-Xtensa-FreeRTOS-bsp/sdk/esp-idf b/ESP32-WROVER-Xtensa-FreeRTOS-bsp/sdk/esp-idf
+--- a/ESP32-WROVER-Xtensa-FreeRTOS-bsp/sdk/esp-idf
++++ b/ESP32-WROVER-Xtensa-FreeRTOS-bsp/sdk/esp-idf
+@@ -1 +1 @@
+-Subproject commit 8bf14a9238329954c7c5062eeeda569529aedf75
++Subproject commit 8bf14a9238329954c7c5062eeeda569529aedf75-dirty

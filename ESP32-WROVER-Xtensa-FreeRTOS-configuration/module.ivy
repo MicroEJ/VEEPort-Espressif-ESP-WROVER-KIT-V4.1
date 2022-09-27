@@ -13,7 +13,7 @@
          - Update the `PLATFORM_VER` in all `README.rst` files and in the `RELEASE_NOTES.rst` file.
          - Update the `CHANGELOG.rst` and `RELEASE_NOTES.rst` to reflect the changes.
     -->
-	<info organisation="com.microej.platform.esp32.esp-wrover-kit-v41" module="Platform" status="integration" revision="2.0.0">
+	<info organisation="com.microej.platform.esp32.esp-wrover-kit-v41" module="Platform" status="integration" revision="2.1.0">
         <ea:build organisation="com.is2t.easyant.buildtypes" module="build-custom" revision="1.+"/>
     	<ea:plugin org="com.is2t.easyant.plugins" module="eclipse-antRunner" revision="1.+"/>
     	<ea:plugin org="com.is2t.easyant.plugins" module="mam" revision="1.+"/>
@@ -42,7 +42,7 @@
 		<dependency org="com.microej.architecture.ESP32.GNUv84_xtensa-esp32-psram" name="simikou6" rev="7.16.1">
 			<artifact name="simikou6" m:classifier="${com.microej.platformbuilder.architecture.usage}" ext="xpf"/>
 		</dependency>
-		<dependency org="com.microej.architecture.ESP32.GNUv84_xtensa-esp32-psram" name="simikou6-ui-pack" rev="13.1.0" transitive="false"/>
+		<dependency org="com.microej.architecture.ESP32.GNUv84_xtensa-esp32-psram" name="simikou6-ui-pack" rev="13.2.0" transitive="false"/>
 		<dependency org="com.microej.pack" name="net" rev="10.1.0" transitive="false"/>
 		<dependency org="com.microej.pack" name="net-addons" rev="2.5.3" transitive="false"/>
 		<dependency org="com.microej.pack" name="hal" rev="2.0.2" transitive="false"/>
@@ -52,7 +52,10 @@
 		<dependency org="com.microej.api" name="esp_idf" rev="1.0.1" transitive="false"/>
 		<dependency org="com.microej.architecture.ESP32" name="esp_idf-impl" rev="1.1.1" transitive="false"/>
 		<dependency org="com.microej.architecture.ESP32" name="esp_idf-mock" rev="1.1.2" transitive="false"/>
+		<dependency org="com.microej.tool" name="javafx" rev="1.2.0" />
+		<dependency org="com.microej.tool" name="imageio-webp" rev="1.0.1" />
 		
+		<dependency org="com.microej.clibrary.thirdparty" name="libwebp" rev="1.0.1" />
 		<!-- CCO begin 
 		<dependency org="com.microej.clibrary.llimpl" name="mjvm-freertos" rev="1.1.0" transitive="false"/>
 		<dependency org="com.microej.clibrary.llimpl" name="microui" rev="1.1.0" transitive="false" />

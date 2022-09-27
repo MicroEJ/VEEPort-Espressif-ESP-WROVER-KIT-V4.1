@@ -25,6 +25,7 @@
 #include "driver/spi_master.h"
 #include "soc/gpio_struct.h"
 #include "driver/gpio.h"
+#include "src/microej/microej_decode.h"
 
 /* Set the default orientation mode as LANDSCAPE. Comment to use the PORTRAIT mode*/
 #define DEFAULT_ORIENTATION_MODE_LANDSCAPE
@@ -753,4 +754,9 @@ void LLUI_DISPLAY_IMPL_binarySemaphoreGive(void* sem, bool under_isr){
 	{
 		xSemaphoreGive((xSemaphoreHandle)sem);
 	}
+}
+
+LLUI_DISPLAY_Status LLUI_DISPLAY_IMPL_decodeImage(uint8_t* addr, uint32_t length, MICROUI_ImageFormat expectedFormat, MICROUI_Image* data, bool* isFullyOpaque)
+{
+	return MICROEJ_DECODE_webp(addr, length, expectedFormat, data, isFullyOpaque);
 }
