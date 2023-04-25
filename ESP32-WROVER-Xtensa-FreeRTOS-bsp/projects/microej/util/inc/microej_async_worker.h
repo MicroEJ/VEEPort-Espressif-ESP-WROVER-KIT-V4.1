@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2018-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2018-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -110,8 +110,8 @@
  *
  *
  * @author MicroEJ Developer Team
- * @version 0.3.0
- * @date 17 March 2021
+ * @version 0.4.0
+ * @date 17 June 2022
  */
 
 #include <stdint.h>

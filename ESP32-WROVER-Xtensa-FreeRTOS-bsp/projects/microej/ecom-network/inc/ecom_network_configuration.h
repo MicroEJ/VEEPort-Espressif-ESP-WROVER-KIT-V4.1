@@ -1,9 +1,8 @@
 /*
  * C
  *
- * Copyright 2020-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2020-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
- *
  */
 
 #ifndef  ECOM_NETWORK_CONFIGURATION_H
@@ -13,8 +12,8 @@
  * @file
  * @brief LLECOM_NETWORK configuration.
  * @author MicroEJ Developer Team
- * @version 2.2.1
- * @date 18 March 2021
+ * @version 2.3.1
+ * @date 13 February 2023
  */
 
 #include "microej_async_worker.h"
@@ -77,12 +76,12 @@ extern MICROEJ_ASYNC_WORKER_handle_t ecom_network_worker;
 #error "ECOM_NETWORK_WORKER_STACK_SIZE not declared. Please uncomment the line above to enable macro declaration and put the right value according to the stack size calibration done for your environment"
 #endif // ECOM_NETWORK_WORKER_STACK_SIZE
 
-	/**
-	 * @brief Priority of the ECOM-NETWORK workers.
-	 */
+/**
+ * @brief Priority of the ECOM-NETWORK workers.
+ */
 #define ECOM_NETWORK_WORKER_PRIORITY (6)
 
-	/**
+/**
  * @brief Generic error returned by native functions.
  */
 #define ECOM_NETWORK_ERROR (-1)
@@ -98,9 +97,9 @@ extern MICROEJ_ASYNC_WORKER_handle_t ecom_network_worker;
 #define IP_ADDR_SIZE (16)
 
 /**
-	 * @brief Set this define to print debug traces.
-	 */
-//#define	LLECOM_NETWORK_DEBUG
+ * @brief Set this define to print debug traces.
+ */
+//#define LLECOM_NETWORK_DEBUG
 
 #ifdef __cplusplus
 	}

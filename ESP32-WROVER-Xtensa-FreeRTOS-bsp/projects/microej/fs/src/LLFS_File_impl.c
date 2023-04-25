@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2015-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2015-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -9,8 +9,8 @@
  * @file
  * @brief LLFS_File implementation with async worker.
  * @author MicroEJ Developer Team
- * @version 2.0.0
- * @date 27 April 2021
+ * @version 2.1.0
+ * @date 17 June 2022
  */
 
 /* Includes ------------------------------------------------------------------*/
@@ -363,6 +363,9 @@ static int32_t LLFS_File_IMPL_open_on_done(uint8_t* path, uint8_t mode){
 	MICROEJ_ASYNC_WORKER_job_t* job = MICROEJ_ASYNC_WORKER_get_job_done();
 	FS_open_t* params = (FS_open_t*)job->params;
 
+	(void)path;
+	(void)mode;
+
 	int32_t result = params->result;
 	if(result == LLFS_NOK){
 		// Exception
@@ -387,6 +390,11 @@ static int32_t LLFS_File_IMPL_write_on_done(int32_t file_id, uint8_t* data, int3
 	MICROEJ_ASYNC_WORKER_job_t* job = MICROEJ_ASYNC_WORKER_get_job_done();
 	FS_write_read_t* params = (FS_write_read_t*)job->params;
 
+	(void)file_id;
+	(void)data;
+	(void)offset;
+	(void)length;
+
 	int32_t result = params->result;
 	if(result == LLFS_NOK){
 		// Exception
@@ -410,6 +418,8 @@ static int32_t LLFS_File_IMPL_write_on_done(int32_t file_id, uint8_t* data, int3
 static int32_t LLFS_File_IMPL_read_on_done(int32_t file_id, uint8_t* data, int32_t offset, int32_t length){
 	MICROEJ_ASYNC_WORKER_job_t* job = MICROEJ_ASYNC_WORKER_get_job_done();
 	FS_write_read_t* params = (FS_write_read_t*)job->params;
+
+	(void)file_id;
 
 	int32_t result = params->result;
 	if(result == LLFS_NOK){
@@ -439,6 +449,9 @@ static void LLFS_File_IMPL_write_byte_on_done(int32_t file_id, int32_t data){
 	MICROEJ_ASYNC_WORKER_job_t* job = MICROEJ_ASYNC_WORKER_get_job_done();
 	FS_write_read_t* params = (FS_write_read_t*)job->params;
 
+	(void)file_id;
+	(void)data;
+
 	int32_t result = params->result;
 	if(result == LLFS_NOK){
 		// Exception
@@ -457,6 +470,8 @@ static void LLFS_File_IMPL_write_byte_on_done(int32_t file_id, int32_t data){
 static int32_t LLFS_File_IMPL_read_byte_on_done(int32_t file_id){
 	MICROEJ_ASYNC_WORKER_job_t* job = MICROEJ_ASYNC_WORKER_get_job_done();
 	FS_write_read_t* params = (FS_write_read_t*)job->params;
+
+	(void)file_id;
 
 	int32_t result = params->result;
 	if(result == LLFS_NOK){
@@ -489,6 +504,8 @@ static void LLFS_File_IMPL_close_on_done(int32_t file_id){
 	MICROEJ_ASYNC_WORKER_job_t* job = MICROEJ_ASYNC_WORKER_get_job_done();
 	FS_close_t* params = (FS_close_t*)job->params;
 
+	(void)file_id;
+
 	int32_t result = params->result;
 	if(result == LLFS_NOK){
 		// Exception
@@ -510,6 +527,9 @@ static void LLFS_File_IMPL_seek_on_done(int32_t file_id, int64_t n){
 	MICROEJ_ASYNC_WORKER_job_t* job = MICROEJ_ASYNC_WORKER_get_job_done();
 	FS_seek_t* params = (FS_seek_t*)job->params;
 
+	(void)file_id;
+	(void)n;
+
 	if(params->result == LLFS_NOK){
 		// Exception
 		SNI_throwNativeIOException(params->error_code, params->error_message);
@@ -527,6 +547,8 @@ static void LLFS_File_IMPL_seek_on_done(int32_t file_id, int64_t n){
 static int64_t LLFS_File_IMPL_get_file_pointer_on_done(int32_t file_id){
 	MICROEJ_ASYNC_WORKER_job_t* job = MICROEJ_ASYNC_WORKER_get_job_done();
 	FS_getfp_t* params = (FS_getfp_t*)job->params;
+
+	(void)file_id;
 
 	int64_t result = params->result;
 	if(params->result == LLFS_NOK){
@@ -550,6 +572,9 @@ static void LLFS_File_IMPL_set_length_on_done(int32_t file_id, int64_t newLength
 	MICROEJ_ASYNC_WORKER_job_t* job = MICROEJ_ASYNC_WORKER_get_job_done();
 	FS_set_length_t* params = (FS_set_length_t*)job->params;
 
+	(void)file_id;
+	(void)newLength;
+
 	if(params->result == LLFS_NOK){
 		// Exception
 		SNI_throwNativeIOException(params->error_code, params->error_message);
@@ -567,6 +592,8 @@ static void LLFS_File_IMPL_set_length_on_done(int32_t file_id, int64_t newLength
 static int64_t LLFS_File_IMPL_get_length_with_fd_on_done(int32_t file_id){
 	MICROEJ_ASYNC_WORKER_job_t* job = MICROEJ_ASYNC_WORKER_get_job_done();
 	FS_get_length_with_fd_t* params = (FS_get_length_with_fd_t*)job->params;
+
+	(void)file_id;
 
 	int64_t result = params->result;
 	if(result == LLFS_NOK){
@@ -587,6 +614,8 @@ static int64_t LLFS_File_IMPL_get_length_with_fd_on_done(int32_t file_id){
 static int32_t LLFS_File_IMPL_available_on_done(int32_t file_id){
 	MICROEJ_ASYNC_WORKER_job_t* job = MICROEJ_ASYNC_WORKER_get_job_done();
 	FS_available_t* params = (FS_available_t*)job->params;
+
+	(void)file_id;
 
 	int32_t result = params->result;
 	if(result == LLFS_NOK){
@@ -609,6 +638,8 @@ static int32_t LLFS_File_IMPL_available_on_done(int32_t file_id){
 static void LLFS_File_IMPL_flush_on_done(int32_t file_id){
 	MICROEJ_ASYNC_WORKER_job_t* job = MICROEJ_ASYNC_WORKER_get_job_done();
 	FS_flush_t* params = (FS_flush_t*)job->params;
+
+	(void)file_id;
 
 	int32_t result = params->result;
 	if(result == LLFS_NOK){

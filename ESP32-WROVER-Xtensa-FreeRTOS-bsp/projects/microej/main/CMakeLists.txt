@@ -1,7 +1,7 @@
 #
 # Makefile
 #
-# Copyright 2020-2022 MicroEJ Corp. All rights reserved.
+# Copyright 2020-2023 MicroEJ Corp. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be found with this software.
 #
 
@@ -22,6 +22,9 @@ set(srcs
     "../core/src/LLMJVM_FreeRTOS.c"
     "../core/src/microej_time_freertos.c"
     "../core/src/microej_main.c"
+
+    "../ecom-comm/src/comms.c"
+    "../ecom-comm/src/LLCOMM_UART_impl.c"
 
     "../ecom-network/src/LLECOM_NETWORK_impl.c"
     "../ecom-network/src/ecom_network_helper_ESP32.c"
@@ -140,6 +143,7 @@ set(srcs
 set(include_dirs 
     "../bluetooth/inc"
     "../core/inc"
+    "../ecom-comm/inc"
     "../ecom-network/inc"
     "../ecom-wifi/inc"
     "../espressif/inc"
@@ -169,9 +173,9 @@ endif()
 idf_component_register(SRCS ${srcs}
                        INCLUDE_DIRS ${include_dirs})
 
+# Added to ignore the casting between incompatible native function prototypes and SNI_closeFunction prototype.
 set(compile_flags 
-    "-fno-strict-aliasing"
-    "-Wno-address")
+    "-Wno-cast-function-type")
 
 # Added to ignore the unused label "start_sysview_logging" used to start 
 # SysView logging.

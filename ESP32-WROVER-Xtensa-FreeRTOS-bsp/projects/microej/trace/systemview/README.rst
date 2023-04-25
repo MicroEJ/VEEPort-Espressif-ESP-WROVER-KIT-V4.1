@@ -1,10 +1,10 @@
 .. 
-	Copyright 2019-2022 MicroEJ Corp. All rights reserved.
+	Copyright 2019-2023 MicroEJ Corp. All rights reserved.
 	Use of this source code is governed by a BSD-style license that can be found with this software.
 
 .. |BOARD_NAME| replace:: ESP-WROVER-KIT V4.1
 .. |BOARD_REVISION| replace:: 4.1
-.. |PLATFORM_VER| replace:: 2.0.0
+.. |PLATFORM_VER| replace:: 2.2.0
 .. |RCP| replace:: MICROEJ SDK
 .. |PLATFORM| replace:: MicroEJ Platform
 .. |PLATFORMS| replace:: MicroEJ Platforms
@@ -14,10 +14,10 @@
 .. |RTOS| replace:: FreeRTOS RTOS
 .. |MANUFACTURER| replace:: Espressif
 
-.. _中文版: ./docs/zn_CH/README_CN.rst
-.. _README: ./../../../README.rst
-.. _RELEASE NOTES: ./../../../RELEASE_NOTES.rst
-.. _CHANGELOG: ./../../../CHANGELOG.rst
+.. _中文版: ./../../docs/zn_CH/README_CN.rst
+.. _README: ./../../../../../README.rst
+.. _RELEASE NOTES: ./../../../../../RELEASE_NOTES.rst
+.. _CHANGELOG: ./../../../../../CHANGELOG.rst
 .. _README MicroEJ BSP: ./../../README.rst
 
 ================

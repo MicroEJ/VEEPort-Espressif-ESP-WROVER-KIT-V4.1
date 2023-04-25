@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2014-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2014-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -9,8 +9,8 @@
  * @file
  * @brief LLNET_NETWORKADDRESS 2.1.0 implementation over BSD-like API.
  * @author MicroEJ Developer Team
- * @version 1.3.1
- * @date 20 April 2021
+ * @version 1.4.2
+ * @date 19 April 2022
  */
 
 #include <LLNET_NETWORKADDRESS_impl.h>
@@ -18,6 +18,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <unistd.h>
 #include "LLNET_CONSTANTS.h"
 #include "LLNET_ERRORS.h"

@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2018-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2018-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -9,8 +9,8 @@
  * @file
  * @brief LLNET_SSL_SOCKET implementation over mbedtls.
  * @author MicroEJ Developer Team
- * @version 2.1.5
- * @date 20 December 2021
+ * @version 2.1.7
+ * @date 7 April 2023
  */
 
 #if !defined(MBEDTLS_CONFIG_FILE)
@@ -24,6 +24,7 @@
 #include "mbedtls/entropy.h"
 #include "mbedtls/ctr_drbg.h"
 #endif
+#include "mbedtls/platform.h"
 #include "LLNET_Common.h"
 #include "LLNET_CONSTANTS.h"
 #include "LLNET_CHANNEL_impl.h"
@@ -57,7 +58,7 @@ const char *DRBG_PERS = "mbed TLS microEJ client";
 
 /* static functions */
 static int32_t LLNET_SSL_SOCKET_IMPL_initialHandShake(int32_t sslID, int32_t fd, uint8_t retry);
-static int32_t asyncOperationWrapper(int32_t fd, SELECT_Operation operation, uint8_t retry);
+static int32_t ssl_asyncOperation(int32_t fd, SELECT_Operation operation, uint8_t retry);
 
 int32_t LLNET_SSL_SOCKET_IMPL_initialize(void){
 	LLNET_SSL_DEBUG_TRACE("%s()\n", __func__);
@@ -110,6 +111,7 @@ int32_t LLNET_SSL_SOCKET_IMPL_create(int32_t contextID, int32_t fd, uint8_t* hos
 		if ((ret = mbedtls_ssl_setup(&(ssl_ctx->ssl_context), conf)) != 0) {
 		    mbedtls_ssl_free(&(ssl_ctx->ssl_context));
 		    mbedtls_free((void*)ssl_ctx);
+			(void)ret;
 			LLNET_SSL_DEBUG_MBEDTLS_TRACE("mbedtls_ssl_setup", ret);
 			return J_CREATE_SSL_ERROR; //error
 		}
@@ -263,11 +265,11 @@ int32_t LLNET_SSL_SOCKET_IMPL_read(int32_t sslID, int32_t fd, int8_t* buf, int32
 
 	if(ret < 0){
 		if(ret == MBEDTLS_ERR_SSL_WANT_READ){
-			 return asyncOperationWrapper(fd, SELECT_READ, retry);
+			 return ssl_asyncOperation(fd, SELECT_READ, retry);
 		}
 		else if(ret == MBEDTLS_ERR_SSL_WANT_WRITE){
 			//read operation can also cause write operation when the peer requests a re-negotiation
-			 return asyncOperationWrapper(fd, SELECT_WRITE, retry);
+			 return ssl_asyncOperation(fd, SELECT_WRITE, retry);
 		}
 		return LLNET_SSL_TranslateReturnCode(ret);
 	}
@@ -317,10 +319,10 @@ int32_t LLNET_SSL_SOCKET_IMPL_write(int32_t sslID, int32_t fd, int8_t* buf, int3
 	if(ret < 0){
 		if(ret == MBEDTLS_ERR_SSL_WANT_READ){
 			//write operation can also cause read operation when the peer requests a re-negotiation
-			 return asyncOperationWrapper(fd, SELECT_READ, retry);
+			 return ssl_asyncOperation(fd, SELECT_READ, retry);
 		}
 		else if(ret == MBEDTLS_ERR_SSL_WANT_WRITE){
-			 return asyncOperationWrapper(fd, SELECT_WRITE, retry);
+			 return ssl_asyncOperation(fd, SELECT_WRITE, retry);
 		}
 		return LLNET_SSL_TranslateReturnCode(ret);
 	}
@@ -393,10 +395,10 @@ static int32_t LLNET_SSL_SOCKET_IMPL_initialHandShake(int32_t sslID, int32_t fd,
 
 	if(0 != ret){
 		if(MBEDTLS_ERR_SSL_WANT_READ == ret){
-			 return asyncOperationWrapper(fd, SELECT_READ, retry);
+			 return ssl_asyncOperation(fd, SELECT_READ, retry);
 		}
 		else if(MBEDTLS_ERR_SSL_WANT_WRITE == ret){
-			 return asyncOperationWrapper(fd, SELECT_WRITE, retry);
+			 return ssl_asyncOperation(fd, SELECT_WRITE, retry);
 		}
 
 		return LLNET_SSL_TranslateReturnCode(ret);
@@ -405,20 +407,22 @@ static int32_t LLNET_SSL_SOCKET_IMPL_initialHandShake(int32_t sslID, int32_t fd,
 	return ret;
 }
 
-static int32_t asyncOperationWrapper(int32_t fd, SELECT_Operation operation, uint8_t retry){
-	int32_t ret = asyncOperation(fd, operation, retry);
-
-	if (J_NET_NATIVE_CODE_BLOCKED_WITHOUT_RESULT == ret){
+static int32_t ssl_asyncOperation(int32_t fd, SELECT_Operation operation, uint8_t retry){
+	int32_t res = asyncOperation(fd, operation, retry);
+	if(res == 0){
+		// request added in the queue
 		return J_NATIVE_CODE_BLOCKED_WITHOUT_RESULT;
-	} else if (J_ASYNC_BLOCKING_REQUEST_QUEUE_LIMIT_REACHED == ret){
-		return J_BLOCKING_QUEUE_LIMIT_REACHED;
-	} else if (J_ETIMEDOUT == ret){
-		return J_SOCKET_TIMEOUT;
-	} else if (J_EUNKNOWN == ret){
-		return J_UNKNOWN_ERROR;
-	} else {
-		return ret;
 	}
+	if(res == -1){
+		// requests queue limit reached
+		return J_BLOCKING_QUEUE_LIMIT_REACHED;
+	}
+	if(res == J_ETIMEDOUT){
+		// socket timeout
+		return J_SOCKET_TIMEOUT;
+	}
+	// other net error is returned as generic socket error
+	return J_SOCKET_ERROR;
 }
 
 #ifdef __cplusplus

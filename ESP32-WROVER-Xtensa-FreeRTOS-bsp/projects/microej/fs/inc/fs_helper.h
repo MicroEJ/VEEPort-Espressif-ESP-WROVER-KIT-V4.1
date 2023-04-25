@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2014-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2014-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -12,8 +12,8 @@
  * @file
  * @brief LLFS helper implementation.
  * @author MicroEJ Developer Team
- * @version 2.0.0
- * @date 27 April 2021
+ * @version 2.1.0
+ * @date 17 June 2022
  */
 
 #include "fs_configuration.h"

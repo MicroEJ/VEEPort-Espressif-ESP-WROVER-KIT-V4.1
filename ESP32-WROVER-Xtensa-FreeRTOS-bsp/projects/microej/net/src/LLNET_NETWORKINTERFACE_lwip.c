@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2017-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2017-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -9,8 +9,8 @@
  * @file
  * @brief LLNET_NETWORKINTERFACE 2.1.0 implementation over LWIP.
  * @author MicroEJ Developer Team
- * @version 0.2.0
- * @date 1 February 2018
+ * @version 0.2.2
+ * @date 27 November 2020
  */
 
 #include <LLNET_NETWORKINTERFACE_impl.h>
@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <lwip/opt.h>
 #include <lwip/netif.h>
+#include <lwip/sockets.h>
 #include "LLNET_CONSTANTS.h"
 #include "LLNET_ERRORS.h"
 #include "LLNET_Common.h"

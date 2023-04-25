@@ -9,7 +9,7 @@
 // get allocator prototypes
 #include "src/utils/utils.h"
 
-#include "LLUI_DISPLAY_IMPL.h"
+#include "LLUI_DISPLAY_impl.h"
 #include "microui_heap.h"
 
 // -----------------------------------------------------------------------------

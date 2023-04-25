@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2017-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2017-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -9,8 +9,8 @@
  * @file
  * @brief Socket timeout cache API
  * @author MicroEJ Developer Team
- * @version 2.3.0
- * @date 17 May 2021
+ * @version 2.3.2
+ * @date 17 February 2023
  */
  
 #ifndef  ASYNC_SELECT_CACHE_H
@@ -59,8 +59,9 @@ void async_select_set_socket_timeout_in_cache(int32_t fd, int32_t timeout);
  *
  * @param[in] fd the socket file descriptor
  * @param[in] absolute_timeout socket absolute timeout
+ * @return 0 on success, -1 on failure.
  */
-void async_select_set_socket_absolute_timeout_in_cache(int32_t fd, int64_t absolute_timeout);
+int32_t async_select_set_socket_absolute_timeout_in_cache(int32_t fd, int64_t absolute_timeout);
 
 /**
  * @brief Remove a socket timeout from the cache

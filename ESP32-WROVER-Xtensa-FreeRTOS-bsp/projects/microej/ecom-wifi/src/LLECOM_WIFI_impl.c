@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2020-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2020-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -9,8 +9,8 @@
  * @file
  * @brief LLECOM_WIFI implementation with async worker.
  * @author MicroEJ Developer Team
- * @version 2.1.0
- * @date 17 June 2021
+ * @version 2.3.0
+ * @date 27 February 2023
  */
 
 /* Includes ------------------------------------------------------------------*/
@@ -63,13 +63,13 @@ static int32_t LLECOM_WIFI_async_exec_scanAP_on_done(int32_t index, int8_t getRe
 static int32_t LLECOM_WIFI_IMPL_scanAPrssiAt_on_done(float* rssi, int32_t rssiOffset, int32_t rssiLength, int32_t index, int8_t getResult);
 static int32_t LLECOM_WIFI_joinWithSecurityMode_on_done(void);
 
-void LLECOM_WIFI_initialize(void) {
+void LLECOM_WIFI_IMPL_initialize(void) {
 #ifndef ECOM_WIFI_CUSTOM_WORKER
 	MICROEJ_ASYNC_WORKER_status_t status = MICROEJ_ASYNC_WORKER_initialize(&ecom_wifi_worker, (uint8_t*)"MicroEJ ECOM-WIFI", ecom_wifi_worker_stack, ECOM_WIFI_WORKER_PRIORITY);
 	if (status == MICROEJ_ASYNC_WORKER_INVALID_ARGS) {
-		SNI_throwNativeException(status, "Invalid argument for ECOM-WIFI async worker");
+		SNI_throwNativeIOException(status, "Invalid argument for ECOM-WIFI async worker");
 	} else if (status == MICROEJ_ASYNC_WORKER_ERROR) {
-		SNI_throwNativeException(status, "Error while initializing ECOM-WIFI async worker");
+		SNI_throwNativeIOException(status, "Error while initializing ECOM-WIFI async worker");
 	}
 #endif
 

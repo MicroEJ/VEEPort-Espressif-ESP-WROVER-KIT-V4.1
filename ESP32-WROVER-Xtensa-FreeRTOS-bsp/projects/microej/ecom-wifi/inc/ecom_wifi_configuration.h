@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2020-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2020-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -12,8 +12,8 @@
  * @file
  * @brief LLECOM_WIFI configuration.
  * @author MicroEJ Developer Team
- * @version 2.1.0
- * @date 17 June 2021
+ * @version 2.3.0
+ * @date 27 February 2023
  */
 
 #include "microej_async_worker.h"
@@ -35,7 +35,7 @@
 
 /**
  * @brief Use this macro to define the initialization function of the wifi stack.
- * Called from LLECOM_WIFI_initialize().
+ * Called from LLECOM_WIFI_IMPL_initialize().
  * By default this macro does nothing.
  */
 #define llecom_wifi_init() (WIFI_ESP32_initialize_f())
@@ -68,11 +68,7 @@ extern MICROEJ_ASYNC_WORKER_handle_t ecom_wifi_worker;
 /**
  * @brief Size of the ECOM-WIFI stack in bytes.
  */
-#if defined(__QNXNTO__)
-#define ECOM_WIFI_WORKER_STACK_SIZE (1024*16) // stack requires more space on QNX
-#else
-#define ECOM_WIFI_WORKER_STACK_SIZE (1024*2)
-#endif
+#define ECOM_WIFI_WORKER_STACK_SIZE (1024*3)
 
 /**
  * @brief ECOM-WIFI worker stack size must be calibrated, unless using a custom worker defined in another module.

@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2020-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2020-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  *
  */
@@ -206,7 +206,7 @@ void LLECOM_NETWORK_IMPL_getDNSCount_action(MICROEJ_ASYNC_WORKER_job_t* job) {
 			const ip_addr_t* dns_addr = dns_getserver(i);
 
 			// check if the DNS server IP address is right
-			if (ip_addr_isany(dns_addr)) {
+			if (!ip_addr_isany(dns_addr)) {
 				count++;
 			} else {
 				break;
@@ -232,7 +232,7 @@ void LLECOM_NETWORK_IMPL_getDNS_action(MICROEJ_ASYNC_WORKER_job_t* job) {
 		const ip_addr_t* dns_addr = dns_getserver(param->index);
 
 		// check if the DNS server IP address is right
-		if (ip_addr_isany(dns_addr)) {
+		if (!ip_addr_isany(dns_addr)) {
 			memcpy(param->address + param->addressOffset, ip_2_ip4(dns_addr), sizeof(ip4_addr_t));
 			param->result = 0;
 		} else {
@@ -550,6 +550,10 @@ void LLECOM_NETWORK_IMPL_useStaticDNS_action(MICROEJ_ASYNC_WORKER_job_t* job) {
 	}
 
 	LLECOM_NETWORK_DEBUG_TRACE("[%s:%u] use static DNS result : %d (err %d)\n", __func__, __LINE__, param->result, param->error_code);
+}
+
+void LLECOM_NETWORK_IMPL_setDefault_action(MICROEJ_ASYNC_WORKER_job_t* job) {
+	/* Platform do not contain multiple network stacks, so this function does not need to be implemented */
 }
 
 #ifdef __cplusplus

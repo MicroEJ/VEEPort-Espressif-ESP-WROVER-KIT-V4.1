@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2017-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2017-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -12,19 +12,18 @@
  * @file
  * @brief LLNET utility functions for LWIP.
  * @author MicroEJ Developer Team
- * @version 0.2.0
- * @date 1 February 2018
+ * @version 0.2.2
+ * @date 27 November 2020
  */
 
 #include <stdint.h>
 #include <lwip/netif.h>
 
-#if LWIP_NETIF_LINK_CALLBACK
-extern void ethernetif_update_config(struct netif *netif);
-extern void ethernetif_set_link(void const *argument);
-
-void llnet_lwip_notify_conn_changed(struct netif *netif);
-#endif
+/**
+ * Network initialization. Start network interfaces and configure it.
+ *
+ * @return 0 if no error occurred, error code otherwise.
+ */
 int32_t llnet_lwip_init(void);
 
 /**

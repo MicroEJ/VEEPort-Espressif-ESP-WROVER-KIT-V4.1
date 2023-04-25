@@ -1,11 +1,11 @@
 ..
-    Copyright 2019-2022 MicroEJ Corp. All rights reserved.
+    Copyright 2019-2023 MicroEJ Corp. All rights reserved.
     Use of this source code is governed by a BSD-style license that can be found with this software.
 
 .. |BOARD_NAME| replace:: ESP-WROVER-KIT V4.1
 .. |BOARD_REVISION| replace:: 4.1
 .. |PLATFORM_NAME| replace:: ESP32 WROVER Platform
-.. |PLATFORM_VER| replace:: 2.1.0
+.. |PLATFORM_VER| replace:: 2.2.0
 .. |RCP| replace:: MICROEJ SDK
 .. |PLATFORM| replace:: MicroEJ Platform
 .. |PLATFORMS| replace:: MicroEJ Platforms
@@ -49,7 +49,7 @@ This |PLATFORM| contains the following dependencies:
    * - Dependency Name
      - Version
    * - Architecture (simikou6)
-     - 7.16.1
+     - 7.20.1
    * - UI Pack (simikou6UI)
      - 13.2.0
    * - NET Pack
@@ -135,6 +135,21 @@ The board provides an RGB matrix with 3 colored LEDs (red, green ,
 blue).  However, only the red LED is available for the user.  The other
 two LEDs are using GPIOs multiplexed for other uses.
 
+ECOM-COMM
+---------
+
+|PLATFORM| features a ecom-comm interface. Two serial connections are provided for (ECOM COMM) 
+
+-  UART1: uses GPIO_PIN_4 for Tx and GPIO_PIN_5 for Rx 
+
+-  UART2: uses GPIO_PIN_18 for Tx and GPIO_PIN_19 for Rx 
+
+.. note::
+
+   This implementation uses a receive queue mechanism and relies on the MicroEJ ``LLCOMM_BUFFERED_CONNECTION`` API. This API is FIFO oriented. It requires two
+   distincts software buffers for reception and transmission: reception buffer uses 2048 bytes and transmission buffer uses 2048 bytes. These buffers are statically allocated in internal RAM.
+
+
 Network
 -------
 
@@ -171,6 +186,7 @@ Known issues/limitations
   write/read with offset from/to immortal arrays,
 - FS API does not support file backward
   skip,
+- TestFileProperties from the FS testsuite fails with current fs#6.0.1 pack,
 - IPV6 is not supported,
 - |BOARD_NAME| JTAG interface & SD Card interface usage are mutually exclusive. 
   As a consequence, SystemView (which uses the JTAG interface) is enabled only on the Mono-Sandbox Platform. 

@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2015-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2015-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -9,8 +9,8 @@
  * @file
  * @brief LLFS implementation with async worker.
  * @author MicroEJ Developer Team
- * @version 2.0.0
- * @date 27 April 2021
+ * @version 2.1.0
+ * @date 17 June 2022
  */
 
 /* Includes ------------------------------------------------------------------*/
@@ -80,6 +80,8 @@ int32_t LLFS_IMPL_get_max_path_length(void){
 }
 
 int32_t LLFS_IMPL_get_last_modified(uint8_t* path, LLFS_date_t* date){
+	(void)date;
+
 	return LLFS_async_exec_path_job(path, (SNI_callback)LLFS_IMPL_get_last_modified, LLFS_IMPL_get_last_modified_action, (SNI_callback)LLFS_IMPL_get_last_modified_on_done);
 }
 
@@ -118,6 +120,8 @@ int32_t LLFS_IMPL_open_directory(uint8_t* path){
 }
 
 int32_t LLFS_IMPL_read_directory(int32_t directory_ID, uint8_t* path){
+	(void)path;
+
 	return LLFS_async_exec_directory_job(directory_ID, (SNI_callback)LLFS_IMPL_read_directory, LLFS_IMPL_read_directory_action, (SNI_callback)LLFS_IMPL_read_directory_on_done);
 }
 
@@ -401,6 +405,8 @@ static int32_t LLFS_IMPL_get_last_modified_on_done(uint8_t* path, LLFS_date_t* d
 	MICROEJ_ASYNC_WORKER_job_t* job = MICROEJ_ASYNC_WORKER_get_job_done();
 	FS_last_modified_t* params = (FS_last_modified_t*)job->params;
 
+	(void)path;
+
 	int32_t result = params->result;
 	if(result == LLFS_OK){
 		*date = params->date;
@@ -426,6 +432,8 @@ static int32_t LLFS_IMPL_get_last_modified_on_done(uint8_t* path, LLFS_date_t* d
  * <code>LLFS_IMPL_delete_action</code> function return code.
  */
 static int32_t LLFS_IMPL_path_function_on_done(uint8_t* path){
+	(void)path;
+
 	return LLFS_async_exec_path_result();
 }
 
@@ -439,6 +447,8 @@ static int32_t LLFS_IMPL_path_function_on_done(uint8_t* path){
 static int64_t LLFS_IMPL_path64_function_on_done(uint8_t* path){
 	MICROEJ_ASYNC_WORKER_job_t* job = MICROEJ_ASYNC_WORKER_get_job_done();
 	FS_path64_operation_t* params = (FS_path64_operation_t*)job->params;
+
+	(void)path;
 
 	int64_t result = params->result;
 	MICROEJ_ASYNC_WORKER_free_job(&fs_worker, job);
@@ -455,6 +465,8 @@ static int64_t LLFS_IMPL_path64_function_on_done(uint8_t* path){
 static int32_t LLFS_IMPL_create_on_done(uint8_t* path){
 	MICROEJ_ASYNC_WORKER_job_t* job = MICROEJ_ASYNC_WORKER_get_job_done();
 	FS_create_t* params = (FS_create_t*)job->params;
+
+	(void)path;
 
 	int32_t result = params->result;
 	if(result == LLFS_NOK){
@@ -477,6 +489,8 @@ static int32_t LLFS_IMPL_create_on_done(uint8_t* path){
 static int32_t LLFS_IMPL_read_directory_on_done(int32_t directory_ID, uint8_t* path){
 	MICROEJ_ASYNC_WORKER_job_t* job = MICROEJ_ASYNC_WORKER_get_job_done();
 	FS_read_directory_t* params = (FS_read_directory_t*)job->params;
+
+	(void)directory_ID;
 
 	int32_t result = params->result;
 	if(result == LLFS_OK){
@@ -508,6 +522,8 @@ static int32_t LLFS_IMPL_close_directory_on_done(int32_t directory_ID){
 	MICROEJ_ASYNC_WORKER_job_t* job = MICROEJ_ASYNC_WORKER_get_job_done();
 	FS_close_directory_t* params = (FS_close_directory_t*)job->params;
 
+	(void)directory_ID;
+
 	int32_t result = params->result;
 	MICROEJ_ASYNC_WORKER_free_job(&fs_worker, job);
 	return result;
@@ -522,6 +538,9 @@ static int32_t LLFS_IMPL_close_directory_on_done(int32_t directory_ID){
  * @return <code>LLFS_IMPL_rename_to_action</code> function return code.
  */
 static int32_t LLFS_IMPL_rename_to_on_done(uint8_t* path, uint8_t* new_path){
+	(void)path;
+	(void)new_path;
+
 	return LLFS_async_exec_path_result();
 }
 
@@ -537,6 +556,9 @@ static int64_t LLFS_IMPL_get_space_size_on_done(uint8_t* path, int32_t space_typ
 	MICROEJ_ASYNC_WORKER_job_t* job = MICROEJ_ASYNC_WORKER_get_job_done();
 	FS_get_space_size* params = (FS_get_space_size*)job->params;
 
+	(void)path;
+	(void)space_type;
+
 	int64_t result = params->result;
 	MICROEJ_ASYNC_WORKER_free_job(&fs_worker, job);
 	return result;
@@ -551,6 +573,9 @@ static int64_t LLFS_IMPL_get_space_size_on_done(uint8_t* path, int32_t space_typ
  * @return <code>LLFS_IMPL_set_last_modified_action</code> function return code.
  */
 static int32_t LLFS_IMPL_set_last_modified_on_done(uint8_t* path, LLFS_date_t* date){
+	(void)path;
+	(void)date;
+
 	return LLFS_async_exec_path_result();
 }
 
@@ -563,6 +588,9 @@ static int32_t LLFS_IMPL_set_last_modified_on_done(uint8_t* path, LLFS_date_t* d
  * @return <code>LLFS_IMPL_is_accessible_action</code> function return code.
  */
 static int32_t LLFS_IMPL_is_accessible_on_done(uint8_t* path, int32_t access){
+	(void)path;
+	(void)access;
+
 	return LLFS_async_exec_path_result();
 }
 
@@ -577,6 +605,11 @@ static int32_t LLFS_IMPL_is_accessible_on_done(uint8_t* path, int32_t access){
  * @return <code>LLFS_IMPL_set_permission_action</code> function return code.
  */
 static int32_t LLFS_IMPL_set_permission_on_done(uint8_t* path, int32_t access, int32_t enable, int32_t owner){
+	(void)path;
+	(void)access;
+	(void)enable;
+	(void)owner;
+
 	return LLFS_async_exec_path_result();
 }
 

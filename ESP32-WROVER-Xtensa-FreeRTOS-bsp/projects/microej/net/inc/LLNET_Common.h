@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2016-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2016-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -12,8 +12,8 @@
  * @file
  * @brief Common LLNET macro and functions.
  * @author MicroEJ Developer Team
- * @version 1.3.1
- * @date 20 April 2021
+ * @version 1.4.2
+ * @date 19 April 2022
  */
 
 #include <stdint.h>
@@ -23,6 +23,7 @@
 #include "async_select.h"
 #include <sys/socket.h>
 #include <sys/time.h>
+#include <netinet/in.h>
 
 // Define LLNET_DEBUG in LLNET_configuration.h to enable network debug trace
 #ifdef LLNET_DEBUG
@@ -61,6 +62,12 @@ union llnet_sockaddr{
 
 
 int32_t asyncOperation(int32_t fd, SELECT_Operation operation, uint8_t retry);
+
+/**
+ * Manages asynchronous I/O operations for NET.
+ *
+ */
+int32_t net_asyncOperation(int32_t fd, SELECT_Operation operation, uint8_t retry);
 
 /**
  * @brief Fills-in the given timeval struct with the given time in milliseconds.

@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2018-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2018-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -9,8 +9,8 @@
  * @file
  * @brief LLNET_SSL_utils_mbedtls functions for mbedtls.
  * @author MicroEJ Developer Team
- * @version 2.1.5
- * @date 20 December 2021
+ * @version 2.1.7
+ * @date 7 April 2023
  */
 
 #ifndef LLNET_SSL_UTILS_MBEDTLS

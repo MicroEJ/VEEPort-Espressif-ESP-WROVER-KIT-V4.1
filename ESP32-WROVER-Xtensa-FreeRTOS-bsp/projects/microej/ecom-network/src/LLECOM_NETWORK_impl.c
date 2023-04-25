@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2020-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2020-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -9,8 +9,8 @@
  * @file
  * @brief LLECOM_NETWORK implementation with async worker.
  * @author MicroEJ Developer Team
- * @version 2.2.1
- * @date 18 March 2021
+ * @version 2.3.1
+ * @date 13 February 2023
  */
 
 /* Includes ------------------------------------------------------------------*/
@@ -326,7 +326,7 @@ static int32_t LLECOM_NETWORK_async_exec_get_dns_context_on_done(int8_t* netifNa
 
 	int32_t result = params->result;
 	if (result >= 0) {
-		int32_t release_result = SNI_flushArrayElements(address, addressOffset, addressLength, (int8_t*)params->address, result);
+		int32_t release_result = SNI_flushArrayElements(address, addressOffset, addressLength, (int8_t*)(params->address + params->addressOffset), params->addressLength);
 		if (release_result != SNI_OK) {
 			SNI_throwNativeIOException(release_result, "SNI_flushArrayElements: Internal error");
 		}
@@ -454,7 +454,7 @@ static int32_t LLECOM_NETWORK_async_exec_get_ip_context_on_done(int8_t* netifNam
 
 	int32_t result = params->result;
 	if (result >= 0) {
-		int32_t release_result = SNI_flushArrayElements(address, addressOffset, addressLength, (int8_t*)params->address, result);
+		int32_t release_result = SNI_flushArrayElements(address, addressOffset, addressLength, (int8_t*)(params->address + params->addressOffset), params->addressLength);
 		if (release_result != SNI_OK) {
 			SNI_throwNativeIOException(release_result, "SNI_flushArrayElements: Internal error");
 		}

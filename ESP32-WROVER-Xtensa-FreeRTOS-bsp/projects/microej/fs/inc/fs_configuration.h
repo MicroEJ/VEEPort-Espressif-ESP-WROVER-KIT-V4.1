@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2014-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2014-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -12,8 +12,8 @@
  * @file
  * @brief LLFS configuration.
  * @author MicroEJ Developer Team
- * @version 2.0.0
- * @date 27 April 2021
+ * @version 2.1.0
+ * @date 17 June 2022
  */
 
 #include "microej_async_worker.h"
@@ -89,7 +89,7 @@ extern MICROEJ_ASYNC_WORKER_handle_t fs_worker;
 /**
  * @brief Size of the FS stack in bytes.
  */
-#define FS_WORKER_STACK_SIZE (1024 * 6)
+#define FS_WORKER_STACK_SIZE (1024*6)
 
 /**
  * @brief FS worker stack size must be calibrated, unless using a custom worker defined in another module.

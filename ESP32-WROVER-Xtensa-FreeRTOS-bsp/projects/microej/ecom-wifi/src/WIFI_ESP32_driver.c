@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2018-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2018-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -119,6 +119,7 @@
 #define START_BIT BIT2
 #define SCAN_BIT BIT3
 #define STOP_BIT BIT4
+#define INITIALIZED_BIT BIT5
 
 /** @brief Timeouts */
 #define DISCONNECT_TIMEOUT_MS 5000
@@ -126,6 +127,7 @@
 #define START_TIMEOUT_MS 5000
 #define STOP_TIMEOUT_MS 5000
 #define SCAN_TIMEOUT_MS 15000
+#define INITIALIZED_TIMEOUT_MS 5000
 
 /** @brief Minimum RSSI threshold to scan for */
 #define WIFI_MIN_RSSI_THRESHOLD -128
@@ -211,9 +213,6 @@ static esp_netif_t *sta_netif;
 
 /** @brief Access Point network interface */
 static esp_netif_t *ap_netif;
-
-/* Variable used to notify that DNS servers list has changed */
-extern uint8_t dns_servers_list_updated;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////Functions Prototypes////////////////////////////////////////////////////////////////
@@ -343,6 +342,19 @@ static bool is_wifi_sta_connected(void);
  * @brief this function filters a list of Access Points based on identical SSID
  */
 static void filter_duplicated_ap_records(void);
+
+/**
+ * @brief this function applies a network configuration to a specific network interface
+ *
+ * @param[in] netif network interface
+ * @param[in] is_static true if static IP configuration needs to be applied on the netif, false otherwise
+ * @param[in] ip static IP to be set
+ * @param[in] netmask static netmask to be set
+ * @param[in] gw static gateway to be set
+ *
+ * @return true if applied with success, false otherwise
+ */
+static bool apply_configuration_f(esp_netif_t *netif, bool is_static, ip4_addr_t ip, ip4_addr_t netmask, ip4_addr_t gw);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////Private Functions//////////////////////////////////////////////////////////////////
@@ -499,7 +511,7 @@ static void event_handler_f(void *arg, esp_event_base_t event_base, int32_t even
                 WIFI_ESP32_ERROR_TRACE("Get interface's IP address information, (err=%x)\n", status);
             }
 
-			/* Unlock any waiting threads */
+            /* Unlock any waiting threads */
             xEventGroupSetBits(gst_wifi_event_group, START_BIT);
             
             break;
@@ -540,7 +552,7 @@ static void event_handler_f(void *arg, esp_event_base_t event_base, int32_t even
             (void)event;
             WIFI_ESP32_INFO_TRACE("Station disconnected from AP with SSID: %s, BSSID: %02X:%02X:%02X:%02X:%02X:%02X, reason: %d\n", event->ssid, event->bssid[0], event->bssid[1], event->bssid[2], event->bssid[3], event->bssid[4], event->bssid[5], event->reason);
 
-			sta_mode.state = WIFI_ESP32_MODE_IDLE;
+            sta_mode.state = WIFI_ESP32_MODE_IDLE;
 
             /* Unlock any waiting threads */
             xEventGroupSetBits(gst_wifi_event_group, DISCONNECTED_BIT);
@@ -598,8 +610,8 @@ static void event_handler_f(void *arg, esp_event_base_t event_base, int32_t even
         {
             ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
 
+            (void)event;
             WIFI_ESP32_INFO_TRACE("Station got IP: %d.%d.%d.%d\n", IP2STR(&event->ip_info.ip));
-            dns_servers_list_updated = 1;
             break;
         }
 
@@ -1175,29 +1187,98 @@ static void filter_duplicated_ap_records(void)
     free(map);
 }
 
+static bool apply_configuration_f(esp_netif_t *netif, bool is_static, ip4_addr_t ip, ip4_addr_t netmask, ip4_addr_t gw)
+{
+    esp_err_t status;
+
+    WIFI_ESP32_ASSERT(is_wifi_initialized());
+
+    /* Take entire configuration from network interface and apply it */
+    if (is_static)
+    {
+        esp_netif_ip_info_t static_ip;
+        esp_netif_dns_info_t dns_main;
+
+        /* Stop the DHCP Client */
+        status = esp_netif_dhcpc_stop(netif);
+        if ((status != ESP_OK) && (status != ESP_ERR_ESP_NETIF_DHCP_ALREADY_STOPPED))
+        {
+            WIFI_ESP32_ERROR_TRACE("Stop DHCP client, (err=%x)\n", status);
+            return false;
+        }
+
+        /* get DNS info */
+        status = esp_netif_get_dns_info(netif, ESP_NETIF_DNS_MAIN, &dns_main);
+        if (status != ESP_OK)
+        {
+            WIFI_ESP32_ERROR_TRACE("Get network interface DNS information, (err=%x)\n", status);
+            return false;
+        }
+
+        /* Set the static IP configuration */
+        memcpy((void *)&static_ip.ip, (void *)&ip.addr, sizeof(static_ip.ip));
+        memcpy((void *)&static_ip.netmask, (void *)&netmask.addr, sizeof(static_ip.netmask));
+        memcpy((void *)&static_ip.gw, (void *)&gw.addr, sizeof(static_ip.gw));
+        status = esp_netif_set_ip_info(netif, &static_ip);
+        if (status != ESP_OK)
+        {
+            WIFI_ESP32_ERROR_TRACE("Set network interface's IP address information , (err=%x)\n", status);
+            return false;
+        }
+
+        /* Check if the TCP/IP stack supports at least 1 DNS Server */
+        if (DNS_MAX_SERVERS > 0)
+        {
+            /* Update the DNS Server */
+            status = esp_netif_set_dns_info(netif, ESP_NETIF_DNS_MAIN, &dns_main);
+            if (status != ESP_OK)
+            {
+                WIFI_ESP32_ERROR_TRACE("Set network interface DNS information, (err=%x)\n", status);
+                return false;
+            }
+        }
+    }
+    else
+    {
+        /* The DHCP Client is started by default when the interface is started */
+    }
+
+    return true;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////Public Functions///////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool WIFI_ESP32_initialize_f(void)
 {
+    if (gst_wifi_event_group != NULL)
+    {
+        /* Initialization ongoing, wait for it to be finished. */
+        EventBits_t uxBits = xEventGroupWaitBits(gst_wifi_event_group, INITIALIZED_BIT, pdFALSE, pdTRUE, INITIALIZED_TIMEOUT_MS / portTICK_RATE_MS);
+        if (!(uxBits & INITIALIZED_BIT))
+        {
+            WIFI_ESP32_ERROR_TRACE("Waiting for the initialized event ended in a timeout\n");
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    /* Create the WiFi event group */
+    gst_wifi_event_group = xEventGroupCreate();
+
     WIFI_ESP32_DEBUG_TRACE("(%s) start\n", __func__);
 
     esp_event_handler_instance_t wifi_instance;
     esp_event_handler_instance_t ip_instance;
     esp_err_t status;
 
-    WIFI_ESP32_ASSERT(!is_wifi_initialized());
-
-    /* The initialization is common for both STA and AP netifs so exit if this function was already called */
-    if (sta_netif && ap_netif)
-    {
-        WIFI_ESP32_DEBUG_TRACE("Exit: (%s)\n", __func__);
-        return true;
-    }
-
-    /* Create the WiFi event group */
-    gst_wifi_event_group = xEventGroupCreate();
+    /* STA and AP modes are not started */
+    sta_mode.state = WIFI_ESP32_MODE_NOT_STARTED;
+    ap_mode.state = WIFI_ESP32_MODE_NOT_STARTED;
     
     /*
      * Initializing the TCP/IP stack, initializing the WiFi module and starting the WiFi module must be done here
@@ -1260,13 +1341,6 @@ bool WIFI_ESP32_initialize_f(void)
         return false;
     }
 
-    /* driver is configured */
-    esp32_driver_state_b = true;
-
-    /* STA or AP modes are not started */
-    sta_mode.state=WIFI_ESP32_MODE_NOT_STARTED;
-    ap_mode.state=WIFI_ESP32_MODE_NOT_STARTED;
-
     /* Start the WiFi module in default station configuration (need to do it at initialization otherwise LwIP will have no registered netif) */
     if (!start_wifi_f(WIFI_MODE_STA, (wifi_config_t *)&g_wifi_sta_default_config))
     {
@@ -1286,6 +1360,12 @@ bool WIFI_ESP32_initialize_f(void)
     /* Set the current connection status (STA mode is started) */
     sta_mode.state = WIFI_ESP32_MODE_IDLE;
 
+    /* Initialization complete flag, useful if there's another task that waits for it */
+    xEventGroupSetBits(gst_wifi_event_group, INITIALIZED_BIT);
+
+    /* driver is configured */
+    esp32_driver_state_b = true;
+
     WIFI_ESP32_DEBUG_TRACE("(%s) end\n", __func__);
     return true;
 }
@@ -1293,106 +1373,17 @@ bool WIFI_ESP32_initialize_f(void)
 bool WIFI_ESP32_sta_apply_configuration_f(bool is_static, ip4_addr_t ip, ip4_addr_t netmask, ip4_addr_t gw)
 {
     WIFI_ESP32_DEBUG_TRACE("(%s) start\n", __func__);
-    
-    esp_err_t status;
-
-    WIFI_ESP32_ASSERT(is_wifi_initialized());
-
-    /* Take entire configuration from network interface and apply it */
-    if (is_static)
-    {
-        esp_netif_ip_info_t static_ip;
-
-        /* Stop the DHCP Client */
-        status = esp_netif_dhcpc_stop(sta_netif);
-        if ((status != ESP_OK) && (status != ESP_ERR_ESP_NETIF_DHCP_ALREADY_STOPPED))
-        {
-            WIFI_ESP32_ERROR_TRACE("Stop DHCP client, (err=%x)\n", status);
-            return false;
-        }
-
-        /* Set the static IP configuration */
-        memcpy((void *)&static_ip.ip, (void *)&ip.addr, sizeof(static_ip.ip));
-        memcpy((void *)&static_ip.netmask, (void *)&netmask.addr, sizeof(static_ip.netmask));
-        memcpy((void *)&static_ip.gw, (void *)&gw.addr, sizeof(static_ip.gw));
-        status = esp_netif_set_ip_info(sta_netif, &static_ip);        
-        if (status != ESP_OK)
-        {
-            WIFI_ESP32_ERROR_TRACE("Set STA interface's IP address information, (err=%x)\n", status);
-            return false;
-        }
-    }
-    else
-    {
-        /* The DHCP Client is started by default when the interface is started */
-    }
-
+    bool status = apply_configuration_f(sta_netif, is_static, ip, netmask, gw);
     WIFI_ESP32_DEBUG_TRACE("(%s) end\n", __func__);
-    return true;
+    return status;
 }
 
 bool WIFI_ESP32_ap_apply_configuration_f(bool is_static, ip4_addr_t ip, ip4_addr_t netmask, ip4_addr_t gw)
 {
     WIFI_ESP32_DEBUG_TRACE("(%s) start\n", __func__);
- 
-    esp_err_t status;
-
-    WIFI_ESP32_ASSERT(is_wifi_initialized());
-
-    /* Take entire configuration from network interface and apply it */
-    if (is_static)
-    {
-        esp_netif_ip_info_t static_ip;
-        esp_netif_dns_info_t dns_main;
-
-        /* Stop the DHCP Client */
-        status = esp_netif_dhcpc_stop(ap_netif);
-        if ((status != ESP_OK) && (status != ESP_ERR_ESP_NETIF_DHCP_ALREADY_STOPPED))
-        {
-            WIFI_ESP32_ERROR_TRACE("Stop DHCP client, (err=%x)\n", status);
-            return false;
-        }
-
-        /* get DNS info */
-        status = esp_netif_get_dns_info(ap_netif, ESP_NETIF_DNS_MAIN, &dns_main);
-        if (status != ESP_OK)
-        {
-            WIFI_ESP32_ERROR_TRACE("Get AP interface DNS information, (err=%x)\n", status);
-            return false;
-        }
-
-        /* Set the static IP configuration */
-        memcpy((void *)&static_ip.ip, (void *)&ip.addr, sizeof(static_ip.ip));
-        memcpy((void *)&static_ip.netmask, (void *)&netmask.addr, sizeof(static_ip.netmask));
-        memcpy((void *)&static_ip.gw, (void *)&gw.addr, sizeof(static_ip.gw));
-        status = esp_netif_set_ip_info(ap_netif, &static_ip);
-        if (status != ESP_OK)
-        {
-            WIFI_ESP32_ERROR_TRACE("Set AP interface's IP address information , (err=%x)\n", status);
-            return false;
-        }
-
-        /* Check if the TCP/IP stack supports at least 1 DNS Server */
-        if (DNS_MAX_SERVERS > 0)
-        {
-            /* Update the DNS Server */
-            status = esp_netif_set_dns_info(sta_netif, ESP_NETIF_DNS_MAIN, &dns_main);
-            if (status != ESP_OK)
-            {
-                WIFI_ESP32_ERROR_TRACE("Set AP interface DNS information, (err=%x)\n", status);
-                return false;
-            }
-            /* DNS servers are also updated, so update this variable to notify the soft DNS foundation library */
-            dns_servers_list_updated = 1;
-        }
-    }
-    else
-    {
-        /* The DHCP Client is started by default when the interface is started */
-    }
-
+    bool status = apply_configuration_f(ap_netif, is_static, ip, netmask, gw);
     WIFI_ESP32_DEBUG_TRACE("(%s) end\n", __func__);
-    return true;
+    return status;
 }
 
 bool WIFI_ESP32_sta_start_f(void)

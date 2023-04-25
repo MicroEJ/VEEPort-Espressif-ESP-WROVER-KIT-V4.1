@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2018-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2018-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -9,8 +9,8 @@
  * @file
  * @brief LLNET_SSL_CONTEXT implementation over mbedtls.
  * @author MicroEJ Developer Team
- * @version 2.1.5
- * @date 20 December 2021
+ * @version 2.1.7
+ * @date 7 April 2023
  */
 
 #if !defined(MBEDTLS_CONFIG_FILE)
@@ -95,6 +95,7 @@ int32_t LLNET_SSL_CONTEXT_IMPL_createContext(int32_t protocol, uint8_t isClientC
 						endpoint,
 						MBEDTLS_SSL_TRANSPORT_STREAM,
 						MBEDTLS_SSL_PRESET_DEFAULT)) != 0) {
+			(void)ret;
 			LLNET_SSL_DEBUG_MBEDTLS_TRACE("mbedtls_ssl_config_defaults", ret);
 		}
 

@@ -1,9 +1,17 @@
 /*
  * C
  *
- * Copyright 2018-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2018-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
+
+/**
+* @file
+* @brief MicroEJ Trace library low level API
+* @author MicroEJ Developer Team
+* @version 2.2.0
+* @date 28 April 2022
+*/
 
 #ifndef LLTRACE_SYSVIEW_CONFIG_H
 #define LLTRACE_SYSVIEW_CONFIG_H

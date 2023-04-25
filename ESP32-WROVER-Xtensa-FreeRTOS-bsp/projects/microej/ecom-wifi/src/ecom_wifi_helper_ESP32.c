@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2018-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2018-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -99,7 +99,7 @@ void LLECOM_WIFI_IMPL_setNameSoftAP_action(MICROEJ_ASYNC_WORKER_job_t* job) {
 		}
 	}
 
-	LLECOM_WIFI_DEBUG_TRACE("[%s:%u] name to set : %s (err %d)\n", __func__, __LINE__, param->buffer_name, param->error_code);
+	LLECOM_WIFI_DEBUG_TRACE("[%s:%u] name to set : %s (err %d)\n", __func__, __LINE__, param->name, param->error_code);
 }
 
 void LLECOM_WIFI_IMPL_getBSSID_action(MICROEJ_ASYNC_WORKER_job_t* job) {
@@ -112,7 +112,7 @@ void LLECOM_WIFI_IMPL_getBSSID_action(MICROEJ_ASYNC_WORKER_job_t* job) {
 			param->error_message = "null pointer";
 		}
 	} else {
-		int8_t* buffer = param->buffer_xssid;
+		int8_t* buffer = param->xssid;
 		bool result;
 
 		result = WIFI_ESP32_get_bssid_f((unsigned char*)buffer, param->xssidLength);
@@ -252,7 +252,7 @@ void LLECOM_WIFI_IMPL_getSSID_action(MICROEJ_ASYNC_WORKER_job_t* job) {
 		}
 	}
 
-	LLECOM_WIFI_DEBUG_TRACE("[%s:%u] ssid : %s (err %d)\n", __func__, __LINE__, param->buffer_xssid, param->error_code);
+	LLECOM_WIFI_DEBUG_TRACE("[%s:%u] ssid : %s (err %d)\n", __func__, __LINE__, param->xssid, param->error_code);
 }
 
 void LLECOM_WIFI_IMPL_getWPSModes_action(MICROEJ_ASYNC_WORKER_job_t* job) {
@@ -364,7 +364,7 @@ void LLECOM_WIFI_IMPL_scanAPssidAt_action(MICROEJ_ASYNC_WORKER_job_t* job) {
 		}
 	}
 
-	LLECOM_WIFI_DEBUG_TRACE("[%s:%u] ssid : %s (err %d)\n", __func__, __LINE__, param->buffer_xssid, param->error_code);
+	LLECOM_WIFI_DEBUG_TRACE("[%s:%u] ssid : %s (err %d)\n", __func__, __LINE__, param->xssid, param->error_code);
 }
 
 void LLECOM_WIFI_IMPL_scanAPbssidAt_action(MICROEJ_ASYNC_WORKER_job_t* job) {
@@ -431,7 +431,7 @@ void LLECOM_WIFI_IMPL_scanAPrssiAt_action(MICROEJ_ASYNC_WORKER_job_t* job) {
 			param->error_message = "null pointer or negative index";
 		}
 	} else {
-		float* buffer = (float*) param->buffer_rssi;
+		float* buffer = (float*) param->rssi;
 		bool result;
 
 		result = WIFI_ESP32_get_ap_rssi_f(param->index, buffer, param->rssiLength);

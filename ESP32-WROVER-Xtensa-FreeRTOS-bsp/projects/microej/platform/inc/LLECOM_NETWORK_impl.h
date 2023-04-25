@@ -1,29 +1,25 @@
 /*
  * C
  *
- * Copyright 2016-2020 MicroEJ Corp. All rights reserved.
- * This library is provided in source code for use, modification and test, subject to license terms.
- * Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
- */
-
-/**
- * @file
- * @brief MicroEJ ECOM-NETWORK low level API
- * @author MicroEJ Developer Team
- * @version 1.1.0
- * @date 23 November 2020
+ * Copyright 2016-2023 MicroEJ Corp. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
 #ifndef _LLECOM_NETWORK_IMPL
 #define _LLECOM_NETWORK_IMPL
 
-#include <stdint.h>
-#include <intern/LLECOM_NETWORK_impl.h>
+/**
+ * @file
+ * @brief MicroEJ ECOM-NETWORK low level API
+ * @author MicroEJ Developer Team
+ * @version 1.1.1
+ */
+
+#include <sni.h>
 
 #ifdef __cplusplus
-extern "C" {
+	extern "C" {
 #endif
-
 
 /** @brief list of Network Interface states constants */
 #define IF_STATE_NOT_ENABLED  		(0)
@@ -39,6 +35,27 @@ extern "C" {
 #define IF_IP_STATIC				(0)
 #define IF_IP_DYNAMIC				(1)
 
+#define LLECOM_NETWORK_IMPL_disable Java_ej_ecom_network_natives_InterfaceManagerImplNatives_disable
+#define LLECOM_NETWORK_IMPL_enable Java_ej_ecom_network_natives_InterfaceManagerImplNatives_enable
+#define LLECOM_NETWORK_IMPL_isEnabled Java_ej_ecom_network_natives_InterfaceManagerImplNatives_isEnabled
+#define LLECOM_NETWORK_IMPL_start Java_ej_ecom_network_natives_InterfaceManagerImplNatives_start
+#define LLECOM_NETWORK_IMPL_stop Java_ej_ecom_network_natives_InterfaceManagerImplNatives_stop
+#define LLECOM_NETWORK_IMPL_isStarted Java_ej_ecom_network_natives_InterfaceManagerImplNatives_isStarted
+#define LLECOM_NETWORK_IMPL_getDNSCount Java_ej_ecom_network_natives_InterfaceManagerImplNatives_getDNSCount
+#define LLECOM_NETWORK_IMPL_getDNS Java_ej_ecom_network_natives_InterfaceManagerImplNatives_getDNS
+#define LLECOM_NETWORK_IMPL_getGateway Java_ej_ecom_network_natives_InterfaceManagerImplNatives_getGateway
+#define LLECOM_NETWORK_IMPL_getNetmask Java_ej_ecom_network_natives_InterfaceManagerImplNatives_getNetmask
+#define LLECOM_NETWORK_IMPL_isDNSStatic Java_ej_ecom_network_natives_InterfaceManagerImplNatives_isDNSStatic
+#define LLECOM_NETWORK_IMPL_isStatic Java_ej_ecom_network_natives_InterfaceManagerImplNatives_isStatic
+#define LLECOM_NETWORK_IMPL_endConfiguration Java_ej_ecom_network_natives_InterfaceManagerImplNatives_endConfiguration
+#define LLECOM_NETWORK_IMPL_startConfiguration Java_ej_ecom_network_natives_InterfaceManagerImplNatives_startConfiguration
+#define LLECOM_NETWORK_IMPL_setDNS Java_ej_ecom_network_natives_InterfaceManagerImplNatives_setDNS
+#define LLECOM_NETWORK_IMPL_setGateway Java_ej_ecom_network_natives_InterfaceManagerImplNatives_setGateway
+#define LLECOM_NETWORK_IMPL_setIP Java_ej_ecom_network_natives_InterfaceManagerImplNatives_setIP
+#define LLECOM_NETWORK_IMPL_setNetmask Java_ej_ecom_network_natives_InterfaceManagerImplNatives_setNetmask
+#define LLECOM_NETWORK_IMPL_useDHCP Java_ej_ecom_network_natives_InterfaceManagerImplNatives_useDHCP
+#define LLECOM_NETWORK_IMPL_useStaticDNS Java_ej_ecom_network_natives_InterfaceManagerImplNatives_useStaticDNS
+#define LLECOM_NETWORK_IMPL_setDefault Java_ej_ecom_network_natives_InterfaceManagerImplNatives_setDefault
 
 /**
  * Disable an interface.
@@ -433,6 +450,6 @@ int32_t LLECOM_NETWORK_IMPL_useStaticDNS(int8_t* netifName, int32_t netifNameOff
 int32_t LLECOM_NETWORK_IMPL_setDefault(int8_t* netifName, int32_t netifNameOffset, int32_t netifNameLength, int8_t getResult);
 
 #ifdef __cplusplus
-}
+	}
 #endif
-#endif // _LLECOM_NETWORK_IMPL
+#endif

@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2017-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2017-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -12,8 +12,8 @@
  * @file
  * @brief Asynchronous network select configuration.
  * @author MicroEJ Developer Team
- * @version 2.3.0
- * @date 17 May 2021
+ * @version 2.3.2
+ * @date 17 February 2023
  */
 
 #include <stdint.h>
@@ -53,7 +53,7 @@
 /**
  * @brief async_select task stack size in bytes.
  */
-#define ASYNC_SELECT_TASK_STACK_SIZE (2048)
+#define ASYNC_SELECT_TASK_STACK_SIZE (3072)
 
 /**
  * @brief async_select task name.

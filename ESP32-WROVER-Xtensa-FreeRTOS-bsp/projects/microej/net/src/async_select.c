@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2017-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2017-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -9,8 +9,8 @@
  * @file
  * @brief Asynchronous network select implementation
  * @author MicroEJ Developer Team
- * @version 2.3.0
- * @date 17 May 2021
+ * @version 2.3.2
+ * @date 17 February 2023
  */
 
 #include "async_select.h"
@@ -19,6 +19,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/select.h>
+#include <netinet/in.h>
 #include <stdbool.h>
 #include <unistd.h>
 #include "LLNET_Common.h"
@@ -198,7 +199,12 @@ int32_t async_select(int32_t fd, SELECT_Operation operation, int64_t timeout_ms,
 		request->absolute_timeout_ms = 0;
 	}
 
-	async_select_set_socket_absolute_timeout_in_cache(fd, request->absolute_timeout_ms);
+	res = async_select_set_socket_absolute_timeout_in_cache(fd, request->absolute_timeout_ms);
+
+	if(res != 0){
+		async_select_free_unused_request(request);
+		return -1;
+	}
 
 	SNI_suspendCurrentJavaThreadWithCallback(0, callback, NULL);
 	res = async_select_send_new_request(request);

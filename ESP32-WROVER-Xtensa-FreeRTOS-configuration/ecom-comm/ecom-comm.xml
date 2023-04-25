@@ -1,0 +1,21 @@
+<!--
+	Copyright 2023 MicroEJ Corp. All rights reserved.
+	Use of this source code is governed by a BSD-style license that can be found with this software.
+-->
+<ecom>
+	<!--
+		Static connections:
+			- UART1:
+				TX: GPIO_PIN_4
+				RX: GPIO_PIN_5
+			- UART2:
+				TX: GPIO_PIN_18 
+				RX: GPIO_PIN_19
+
+		Dynamic connections: None
+	-->
+	<comms maxConnections="2">
+		<comm platformId="6"/>
+		<comm platformId="7"/>
+	</comms>
+</ecom>

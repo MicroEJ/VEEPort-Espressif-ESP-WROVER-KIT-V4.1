@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2018-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2018-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -9,8 +9,8 @@
  * @file
  * @brief LLNET_SSL_utils_mbedtls implementation over mbedtls.
  * @author MicroEJ Developer Team
- * @version 2.1.5
- * @date 20 December 2021
+ * @version 2.1.7
+ * @date 7 April 2023
  */
 
 #if !defined(MBEDTLS_CONFIG_FILE)
@@ -24,6 +24,7 @@
 #if defined(MBEDTLS_CTR_DRBG_C)
 #include "mbedtls/ctr_drbg.h"
 #endif
+#include "mbedtls/platform.h"
 #include "LLNET_Common.h"
 #include "LLNET_SSL_utils_mbedtls.h"
 #include "LLNET_SSL_ERRORS.h"
@@ -76,7 +77,7 @@ static uint8_t * microej_get_str_from_array(uint8_t * array, uint32_t offset, ui
 			 */
 
 			/* Try first internal memory because it is faster */
-			p_str = malloc(*len);
+			p_str = mbedtls_calloc(1, *len);
 
 			if (NULL == p_str) {
 				return NULL;

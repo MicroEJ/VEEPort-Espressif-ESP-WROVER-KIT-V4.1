@@ -1,5 +1,5 @@
 /* 
- * Copyright 2020-2021 MicroEJ Corp. All rights reserved.
+ * Copyright 2020-2022 MicroEJ Corp. All rights reserved.
  * This library is provided in source code for use, modification and test, subject to license terms.
  * Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
  */
@@ -362,9 +362,9 @@ bool LLUI_DISPLAY_isTransparent(MICROUI_Image* image);
  * @brief Updates the flush dirty area. This dirty area will be merged with the
  * current dirty area and given as parameter in LLUI_DISPLAY_IMPL_flush() function.
  *
- * This function is useless when the given graphics context is not the display (in
- * this case this call has no effect). Caller can check that calling LLUI_DISPLAY_isLCD()
- * before.
+ * This function is useless when the graphics context where the drawing has been performed
+ * is not the display (in this case this call has no effect). Caller can check that calling
+ * LLUI_DISPLAY_isLCD() before.
  *
  * This function can be called by the drawing native implementation or by the GPU callback
  * function. The graphics engine automatically checks if the current drawing concerns
@@ -387,7 +387,7 @@ bool LLUI_DISPLAY_isTransparent(MICROUI_Image* image);
  */
 bool LLUI_DISPLAY_setDrawingLimits(jint xmin, jint ymin, jint xmax, jint ymax);
 
-/**
+/*
  * @brief Converts the 32-bit ARGB color format (A-R-G-B) into the display color
  * format.
  *
@@ -400,7 +400,7 @@ bool LLUI_DISPLAY_setDrawingLimits(jint xmin, jint ymin, jint xmax, jint ymax);
  */
 uint32_t LLUI_DISPLAY_convertARGBColorToDisplayColor(uint32_t color);
 
-/**
+/*
  * @brief Converts the display color format into a 32-bit ARGB color format (A-R-G-B).
  *
  * Note: the alpha level may be ignored if the display pixel representation does
@@ -414,6 +414,17 @@ uint32_t LLUI_DISPLAY_convertARGBColorToDisplayColor(uint32_t color);
 uint32_t LLUI_DISPLAY_convertDisplayColorToARGBColor(uint32_t color);
 
 /*
+ * Returns the 32-bit ARGB color format (A-R-G-B) of a pixel of the image.
+ *
+ * @param[in] image the MicroUI Image.
+ * @param[in] x the x coordinate of the pixel.
+ * @param[in] y the y coordinate of the pixel.
+ *
+ * @return an ARGB8888 color or 0 if the pixel is out-of-bounds.
+ */
+uint32_t LLUI_DISPLAY_readPixel(MICROUI_Image* img, int32_t x, int32_t y);
+
+/*
  * @brief Blends two colors applying a global alpha factor.
  *
  * @param[in] foreground the ARGB8888 foreground color.
@@ -425,7 +436,7 @@ uint32_t LLUI_DISPLAY_convertDisplayColorToARGBColor(uint32_t color);
 uint32_t LLUI_DISPLAY_blend(uint32_t foreground, uint32_t background, uint32_t alpha);
 
 /*
- * @brief Allocates a memory area in images heap.
+ * @brief Allocates a memory area in the images heap.
  *
  * On success, caller has to use the functions LLUI_DISPLAY_getBufferAddress() and
  * LLUI_DISPLAY_getStride*() to retrieve image buffer characteristics.

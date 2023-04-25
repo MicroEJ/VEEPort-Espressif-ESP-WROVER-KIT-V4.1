@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2014-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2014-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -9,8 +9,8 @@
  * @file
  * @brief LLNET_CHANNEL 2.1.0 implementation over BSD-like API.
  * @author MicroEJ Developer Team
- * @version 1.3.1
- * @date 20 April 2021
+ * @version 1.4.2
+ * @date 19 April 2022
  */
 
 #include <LLNET_CHANNEL_impl.h>
@@ -19,6 +19,8 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/time.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include "LLNET_CONSTANTS.h"
@@ -28,12 +30,12 @@
 #include "LLNET_Common.h"
 #if LLNET_AF & LLNET_AF_IPV6
 #include <ifaddrs.h>
+#include <arpa/inet.h>
 #include <netdb.h>
 #include <net/if.h>
 #endif
 
 #include "LLECOM_NETWORK.h"
-#include "LLECOM_WIFI.h"
 
 #ifdef LLNET_IGNORE_SIGPIPE
 #include <signal.h>
@@ -69,7 +71,6 @@ int32_t LLNET_CHANNEL_IMPL_initialize(void)
 	int32_t res;
 
 	LLECOM_NETWORK_initialize();
-	LLECOM_WIFI_initialize();
 
 #ifdef LLNET_IGNORE_SIGPIPE
 	// Ignore SIGPIPE signal that is sent when a connection is closed by the remote host.
@@ -84,6 +85,7 @@ int32_t LLNET_CHANNEL_IMPL_initialize(void)
 	}
 
 	return 0;
+
 }
 
 int32_t LLNET_CHANNEL_IMPL_setBlocking(int32_t fd, uint8_t blocking, uint8_t retry)

@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2021-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2021-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -9,30 +9,33 @@
  * @file
  * @brief MicroEJ Security low level API implementation for MbedTLS Library.
  * @author MicroEJ Developer Team
- * @version 0.10.0
+ * @version 1.1.0
  */
 
 #include <LLSEC_DIGEST_impl.h>
 #include <LLSEC_ERRORS.h>
 #include <sni.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "mbedtls/platform.h"
 #include "mbedtls/md.h"
 
-#define LLSEC_DIGEST_SUCCESS 1
-#define LLSEC_DIGEST_ERROR   0
+#define LLSEC_DIGEST_SUCCESS 0
+#define LLSEC_DIGEST_ERROR   -1
 
+#define MD5_DIGEST_LENGTH    16
+#define SHA1_DIGEST_LENGTH   20
 #define SHA256_DIGEST_LENGTH 32
 #define SHA512_DIGEST_LENGTH 64
 
 //#define LLSEC_DIGEST_DEBUG
 
 #ifdef LLSEC_DIGEST_DEBUG
-#define LLSEC_DIGEST_DEBUG_TRACE(...) printf(__VA_ARGS__)
+// cppcheck-suppress misra-c2012-21.6 // Include only in debug
+#include <stdio.h>
+#define LLSEC_DIGEST_DEBUG_TRACE(...) (void)printf(__VA_ARGS__)
 #else
 #define LLSEC_DIGEST_DEBUG_TRACE(...) ((void)0)
 #endif
@@ -56,11 +59,34 @@ typedef struct {
 
 static int mbedtls_digest_update(void* native_id, uint8_t* buffer, int32_t buffer_length);
 static int mbedtls_digest_digest(void* native_id, uint8_t* out, int32_t* out_length);
+static int LLSEC_DIGEST_MD5_init(void** native_id);
+static int LLSEC_DIGEST_SHA1_init(void** native_id);
 static int LLSEC_DIGEST_SHA256_init(void** native_id);
 static int LLSEC_DIGEST_SHA512_init(void** native_id);
 static void mbedtls_digest_close(void* native_id);
 
-static LLSEC_DIGEST_algorithm available_algorithms[] = {
+// cppcheck-suppress misra-c2012-8.9 // Define here for code readability even if it called once in this file.
+static LLSEC_DIGEST_algorithm available_digest_algorithms[4] = {
+    {
+        .name   = "MD5",
+        .init   = LLSEC_DIGEST_MD5_init,
+        .update = mbedtls_digest_update,
+        .digest = mbedtls_digest_digest,
+        .close  = mbedtls_digest_close,
+        {
+            .digest_length = MD5_DIGEST_LENGTH
+        }
+    },
+    {
+        .name   = "SHA-1",
+        .init   = LLSEC_DIGEST_SHA1_init,
+        .update = mbedtls_digest_update,
+        .digest = mbedtls_digest_digest,
+        .close  = mbedtls_digest_close,
+        {
+            .digest_length = SHA1_DIGEST_LENGTH
+        }
+    },
     {
         .name   = "SHA-256",
         .init   = LLSEC_DIGEST_SHA256_init,
@@ -92,11 +118,7 @@ static int mbedtls_digest_update(void* native_id, uint8_t* buffer, int32_t buffe
 
     mbedtls_md_context_t* md_ctx = (mbedtls_md_context_t*)native_id;
     int rc = mbedtls_md_update(md_ctx, buffer, buffer_length);
-    if (rc != 0) {
-        return rc;
-    }
-
-    return LLSEC_DIGEST_SUCCESS;
+    return rc;
 }
 
 static int mbedtls_digest_digest(void* native_id, uint8_t* out, int32_t* out_length)
@@ -106,12 +128,11 @@ static int mbedtls_digest_digest(void* native_id, uint8_t* out, int32_t* out_len
     mbedtls_md_context_t* md_ctx = (mbedtls_md_context_t*)native_id;
     int rc = mbedtls_md_finish(md_ctx, out);
 
-    if (rc != 0) {
-        return rc;
+    if (rc == 0) {
+        *out_length = strlen((char*)out);
     }
 
-    *out_length = strlen((char*)out);
-    return LLSEC_DIGEST_SUCCESS;
+    return rc;
 }
 
 static void mbedtls_digest_close(void* native_id)
@@ -125,33 +146,102 @@ static void mbedtls_digest_close(void* native_id)
 }
 
 /*
- * Specific sha-256 function
+ * Specific md5 function
  */
-static int LLSEC_DIGEST_SHA256_init(void** native_id)
+static int LLSEC_DIGEST_MD5_init(void** native_id)
 {
+    int return_code = LLSEC_DIGEST_SUCCESS;
     LLSEC_DIGEST_DEBUG_TRACE("%s \n", __func__);
 
     mbedtls_md_context_t* md_ctx = mbedtls_calloc(1, sizeof(mbedtls_md_context_t));
     if (md_ctx == NULL) {
-        return LLSEC_DIGEST_ERROR;
+        return_code = LLSEC_DIGEST_ERROR;
     }
 
-    mbedtls_md_init(md_ctx);
+    if (return_code == LLSEC_DIGEST_SUCCESS){
+        mbedtls_md_init(md_ctx);
 
-    int rc = mbedtls_md_setup(md_ctx, mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), 0);
-    if (rc != 0) {
-        mbedtls_md_free(md_ctx);
-        return rc;
+        return_code = mbedtls_md_setup(md_ctx, mbedtls_md_info_from_type(MBEDTLS_MD_MD5), 0);
+        if (return_code != LLSEC_DIGEST_SUCCESS) {
+            mbedtls_md_free(md_ctx);
+        }
     }
 
-    rc = mbedtls_md_starts(md_ctx);
-    if (rc != 0) {
-        mbedtls_md_free(md_ctx);
-        return rc;
-    } else {
-        *native_id = md_ctx;
-        return LLSEC_DIGEST_SUCCESS;
+    if (return_code == LLSEC_DIGEST_SUCCESS){
+        return_code = mbedtls_md_starts(md_ctx);
+        if (return_code != LLSEC_DIGEST_SUCCESS) {
+            mbedtls_md_free(md_ctx);
+        } else {
+            *native_id = md_ctx;
+        }
     }
+    return return_code;
+}
+
+/*
+ * Specific sha-1 function
+ */
+static int LLSEC_DIGEST_SHA1_init(void** native_id)
+{
+    int return_code = LLSEC_DIGEST_SUCCESS;
+    LLSEC_DIGEST_DEBUG_TRACE("%s \n", __func__);
+
+    mbedtls_md_context_t* md_ctx = mbedtls_calloc(1, sizeof(mbedtls_md_context_t));
+    if (md_ctx == NULL) {
+        return_code = LLSEC_DIGEST_ERROR;
+    }
+
+    if (return_code == LLSEC_DIGEST_SUCCESS){
+        mbedtls_md_init(md_ctx);
+
+        return_code = mbedtls_md_setup(md_ctx, mbedtls_md_info_from_type(MBEDTLS_MD_SHA1), 0);
+        if (return_code != LLSEC_DIGEST_SUCCESS) {
+            mbedtls_md_free(md_ctx);
+        }
+    }
+
+    if (return_code == LLSEC_DIGEST_SUCCESS){
+        return_code = mbedtls_md_starts(md_ctx);
+        if (return_code != LLSEC_DIGEST_SUCCESS) {
+            mbedtls_md_free(md_ctx);
+        } else {
+            *native_id = md_ctx;
+        }
+    }
+    return return_code;
+}
+
+/*
+ * Specific sha-256 function
+ */
+static int LLSEC_DIGEST_SHA256_init(void** native_id)
+{
+    int return_code = LLSEC_DIGEST_SUCCESS;
+    LLSEC_DIGEST_DEBUG_TRACE("%s \n", __func__);
+
+    mbedtls_md_context_t* md_ctx = mbedtls_calloc(1, sizeof(mbedtls_md_context_t));
+    if (md_ctx == NULL) {
+        return_code = LLSEC_DIGEST_ERROR;
+    }
+
+    if (return_code == LLSEC_DIGEST_SUCCESS){
+        mbedtls_md_init(md_ctx);
+
+        return_code = mbedtls_md_setup(md_ctx, mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), 0);
+        if (return_code != LLSEC_DIGEST_SUCCESS) {
+            mbedtls_md_free(md_ctx);
+        }
+    }
+
+    if (return_code == LLSEC_DIGEST_SUCCESS){
+        return_code = mbedtls_md_starts(md_ctx);
+        if (return_code != LLSEC_DIGEST_SUCCESS) {
+            mbedtls_md_free(md_ctx);
+        } else {
+            *native_id = md_ctx;
+        }
+    }
+    return return_code;
 }
 
 /*
@@ -159,29 +249,32 @@ static int LLSEC_DIGEST_SHA256_init(void** native_id)
  */
 static int LLSEC_DIGEST_SHA512_init(void** native_id)
 {
+    int return_code = LLSEC_DIGEST_SUCCESS;
     LLSEC_DIGEST_DEBUG_TRACE("%s \n", __func__);
 
     mbedtls_md_context_t* md_ctx = mbedtls_calloc(1, sizeof(mbedtls_md_context_t));
     if (md_ctx == NULL) {
-        return LLSEC_DIGEST_ERROR;
+        return_code = LLSEC_DIGEST_ERROR;
     }
 
-    mbedtls_md_init(md_ctx);
+    if (return_code == LLSEC_DIGEST_SUCCESS){
+        mbedtls_md_init(md_ctx);
 
-    int rc = mbedtls_md_setup(md_ctx, mbedtls_md_info_from_type(MBEDTLS_MD_SHA512), 0);
-    if (rc != 0) {
-        mbedtls_md_free(md_ctx);
-        return rc;
+        return_code = mbedtls_md_setup(md_ctx, mbedtls_md_info_from_type(MBEDTLS_MD_SHA512), 0);
+        if (return_code != LLSEC_DIGEST_SUCCESS) {
+            mbedtls_md_free(md_ctx);
+        }
     }
 
-    rc = mbedtls_md_starts(md_ctx);
-    if (rc != 0) {
-        mbedtls_md_free(md_ctx);
-        return rc;
-    } else {
-        *native_id = md_ctx;
-        return LLSEC_DIGEST_SUCCESS;
+    if (return_code == LLSEC_DIGEST_SUCCESS){
+        return_code = mbedtls_md_starts(md_ctx);
+        if (return_code != LLSEC_DIGEST_SUCCESS) {
+            mbedtls_md_free(md_ctx);
+        } else {
+            *native_id = md_ctx;
+        }
     }
+    return return_code;
 }
 
 /**
@@ -196,20 +289,27 @@ static int LLSEC_DIGEST_SHA512_init(void** native_id)
  */
 int32_t LLSEC_DIGEST_IMPL_get_algorithm_description(uint8_t* algorithm_name, LLSEC_DIGEST_algorithm_desc* algorithm_desc)
 {
+    int32_t return_code = LLSEC_DIGEST_SUCCESS;
     LLSEC_DIGEST_DEBUG_TRACE("%s \n", __func__);
-    int32_t nb_algorithms = sizeof(available_algorithms) / sizeof(LLSEC_DIGEST_algorithm);
-    LLSEC_DIGEST_algorithm* algorithm = &available_algorithms[0];
+    int32_t nb_algorithms = sizeof(available_digest_algorithms) / sizeof(LLSEC_DIGEST_algorithm);
+    LLSEC_DIGEST_algorithm* algorithm = &available_digest_algorithms[0];
 
     while (--nb_algorithms >= 0) {
         if (strcmp((char*)algorithm_name, (algorithm->name)) == 0) {
-            memcpy(algorithm_desc, &(algorithm->description), sizeof(LLSEC_DIGEST_algorithm_desc));
-            return (int32_t)algorithm;
+            (void) memcpy(algorithm_desc, &(algorithm->description), sizeof(LLSEC_DIGEST_algorithm_desc));
+            break;
         }
         algorithm++;
     }
 
-    // Algorithm not found.
-    return -1;
+    if (nb_algorithms >= 0)
+    {
+        // cppcheck-suppress misra-c2012-11.4 // Abstract data type for SNI usage
+        return_code = (int32_t)algorithm;
+    } else {
+        return_code = LLSEC_DIGEST_ERROR;
+    }
+    return return_code;
 }
 
 /**
@@ -223,25 +323,28 @@ int32_t LLSEC_DIGEST_IMPL_get_algorithm_description(uint8_t* algorithm_name, LLS
  */
 int32_t LLSEC_DIGEST_IMPL_init(int32_t algorithm_id)
 {
+    int32_t return_code = 0;
     LLSEC_DIGEST_DEBUG_TRACE("%s \n", __func__);
     void* native_id = NULL;
+    // cppcheck-suppress misra-c2012-11.4 // Abstract data type for SNI usage
     LLSEC_DIGEST_algorithm* algorithm = (LLSEC_DIGEST_algorithm*)algorithm_id;
 
-    int returnCode = algorithm->init((void**)&native_id);
+    return_code = algorithm->init((void**)&native_id);
 
-    if (returnCode != LLSEC_DIGEST_SUCCESS) {
-        SNI_throwNativeException(returnCode, "LLSEC_DIGEST_IMPL_init failed");
-        return -1;
+    if (return_code != LLSEC_DIGEST_SUCCESS) {
+        SNI_throwNativeException(return_code, "LLSEC_DIGEST_IMPL_init failed");
+    } else {
+        /* register SNI native resource */
+        if (SNI_registerResource(native_id, algorithm->close, NULL) != SNI_OK) {
+            SNI_throwNativeException(LLSEC_DIGEST_ERROR, "Can't register SNI native resource");
+            algorithm->close((void*)native_id);
+            return_code = LLSEC_DIGEST_ERROR;
+        } else {
+            // cppcheck-suppress misra-c2012-11.6 // Abstract data type for SNI usage
+            return_code = (int32_t)native_id;
+        }
     }
-
-    /* register SNI native resource */
-    if (SNI_registerResource(native_id, algorithm->close, NULL) != SNI_OK) {
-        SNI_throwNativeException(-1, "Can't register SNI native resource");
-        algorithm->close((void*)native_id);
-        return -1;
-    }
-
-    return (int32_t)native_id;
+    return return_code;
 }
 
 /**
@@ -255,12 +358,16 @@ int32_t LLSEC_DIGEST_IMPL_init(int32_t algorithm_id)
 void LLSEC_DIGEST_IMPL_close(int32_t algorithm_id, int32_t native_id)
 {
     LLSEC_DIGEST_DEBUG_TRACE("%s \n", __func__);
+    // cppcheck-suppress misra-c2012-11.4 // Abstract data type for SNI usage
     LLSEC_DIGEST_algorithm* algorithm = (LLSEC_DIGEST_algorithm*)algorithm_id;
 
+    // cppcheck-suppress misra-c2012-11.6 // Abstract data type for SNI usage
     algorithm->close((void*)native_id);
 
+    // cppcheck-suppress misra-c2012-11.6 // Abstract data type for SNI usage
+    // cppcheck-suppress misra-c2012-11.1 // Abstract data type for SNI usage
     if (SNI_unregisterResource((void*)native_id, (SNI_closeFunction)algorithm->close) != SNI_OK) {
-        SNI_throwNativeException(-1, "Can't unregister SNI native resource");
+        SNI_throwNativeException(LLSEC_DIGEST_ERROR, "Can't unregister SNI native resource");
     }
 }
 
@@ -280,8 +387,10 @@ void LLSEC_DIGEST_IMPL_close(int32_t algorithm_id, int32_t native_id)
 void LLSEC_DIGEST_IMPL_update(int32_t algorithm_id, int32_t native_id, uint8_t* buffer, int32_t buffer_offset, int32_t buffer_length)
 {
     LLSEC_DIGEST_DEBUG_TRACE("%s \n", __func__);
+    // cppcheck-suppress misra-c2012-11.4 // Abstract data type for SNI usage
     LLSEC_DIGEST_algorithm* algorithm = (LLSEC_DIGEST_algorithm*)algorithm_id;
-    int returnCode = algorithm->update((void*)native_id, buffer + buffer_offset, buffer_length);
+    // cppcheck-suppress misra-c2012-11.6 // Abstract data type for SNI usage
+    int returnCode = algorithm->update((void*)native_id, &buffer[buffer_offset], buffer_length);
 
     if (returnCode != LLSEC_DIGEST_SUCCESS) {
         SNI_throwNativeException(returnCode, "LLSEC_DIGEST_IMPL_update failed");
@@ -304,8 +413,10 @@ void LLSEC_DIGEST_IMPL_update(int32_t algorithm_id, int32_t native_id, uint8_t* 
 void LLSEC_DIGEST_IMPL_digest(int32_t algorithm_id, int32_t native_id, uint8_t* out, int32_t out_offset, int32_t out_length)
 {
     LLSEC_DIGEST_DEBUG_TRACE("%s \n", __func__);
+    // cppcheck-suppress misra-c2012-11.4 // Abstract data type for SNI usage
     LLSEC_DIGEST_algorithm* algorithm = (LLSEC_DIGEST_algorithm*)algorithm_id;
-    int returnCode = algorithm->digest((void*)native_id, out + out_offset, &out_length);
+    // cppcheck-suppress misra-c2012-11.6 // Abstract data type for SNI usage
+    int returnCode = algorithm->digest((void*)native_id, &out[out_offset], &out_length);
 
     if (returnCode != LLSEC_DIGEST_SUCCESS) {
         SNI_throwNativeException(returnCode, "LLSEC_DIGEST_IMPL_digest failed");
@@ -323,6 +434,8 @@ void LLSEC_DIGEST_IMPL_digest(int32_t algorithm_id, int32_t native_id, uint8_t* 
 int32_t LLSEC_DIGEST_IMPL_get_close_id(int32_t algorithm_id)
 {
     LLSEC_DIGEST_DEBUG_TRACE("%s \n", __func__);
+    // cppcheck-suppress misra-c2012-11.4 // Abstract data type for SNI usage
     LLSEC_DIGEST_algorithm* algorithm = (LLSEC_DIGEST_algorithm*)algorithm_id;
+    // cppcheck-suppress misra-c2012-11.1 // Abstract data type for SNI usage
     return (int32_t)algorithm->close;
 }

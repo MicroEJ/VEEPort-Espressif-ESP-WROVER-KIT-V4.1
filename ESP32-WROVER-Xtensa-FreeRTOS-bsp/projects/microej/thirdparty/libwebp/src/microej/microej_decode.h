@@ -4,7 +4,7 @@
 #ifndef WEBP_MICROEJ_MICROEJ_DECODE_H_
 #define WEBP_MICROEJ_MICROEJ_DECODE_H_
 
-#include "LLUI_DISPLAY_IMPL.h"
+#include "LLUI_DISPLAY_impl.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,8 +1,8 @@
 /*
  * C
  *
- * Copyright 2020-2022 MicroEJ Corp. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be found with this software.
+ *  Copyright 2020-2023 MicroEJ Corp. All rights reserved.
+ *  Use of this source code is governed by a BSD-style license that can be found with this software.
  *
  */
 
@@ -10,8 +10,8 @@
  * @file
  * @brief MicroEJ startup.
  * @author MicroEJ Developer Team
- * @version 2.0.0
- * @date 15 September 2020
+ * @version 2.1.0
+ * @date 17 June 2022
  */
 
 #ifndef MICROEJ_MAIN_H_

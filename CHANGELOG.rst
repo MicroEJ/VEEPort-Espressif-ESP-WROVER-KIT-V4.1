@@ -1,5 +1,5 @@
 ..
-    Copyright 2019-2022 MicroEJ Corp. All rights reserved.
+    Copyright 2019-2023 MicroEJ Corp. All rights reserved.
     Use of this source code is governed by a BSD-style license that can be found with this software.
 
 ===========
@@ -7,7 +7,64 @@
 ===========
 
 ---------------------
- [2.1.0] -
+ [2.2.0] - 2023-04-07
+---------------------
+
+Added
+=====
+
+- VEE Port validation projects (CORE, ECOM-WIFI, FS, NET, SECURITY, SSL, UI).
+- ecom-network-pack 1.0.0.
+- ecom-wifi-pack 1.0.0.
+- net-dns-lwip CCO 0.1.3.
+- net-lwip CCO 0.2.2.
+- ecom-comm abstraction layer implementation.
+
+Removed
+=======
+
+- net-addons pack.
+- Cleanup configuration folder.
+- net-ssl-2_2-testsuite-openjdk dependency from SSL validation project as it is not applicable for this VEE Port.
+- TestKeystoreManipulation test from SSL validation project due to out of date testsuite configuration.
+
+Changed
+=======
+
+- Update modules:
+
+  - MicroEJ Architecture simikou6 7.20.1.
+  - ecom-wifi-generic CCO 2.3.0.
+  - security-mbedtls CCO 1.1.1.
+  - async_select CCO 2.3.2.
+  - bsp-microej-async-worker CCO 0.4.0.
+  - bsp-microej-main CCO 2.1.0.
+  - ecom-network-generic CCO 2.3.1.
+  - fs-generic CCO 2.1.0.
+  - net-bsd CCO 1.4.2.
+  - net-ssl-mbedtls CCO 2.1.7.
+  - osal-FreeRTOS CCO 1.1.0.
+  - osal-headers CCO 1.0.2.
+  - trace-systemview CCO 2.2.0.
+  - watchdog-timer-checkpoint-freertos CCO 2.1.0.
+
+Fixed
+=====
+
+- Broken links in documentation.
+- BSSID and RSSI retrieval from the WiFi driver.
+- Incorrect call to install.bat script from set_project_env.bat script.
+- Exception in thread "FeatureFinalizer".
+- Stack overflow in ECOM-WIFI worker task.
+- Stack overflow in ASYNC-SELECT stack.
+- Assert when running an application with ecom-wifi dependency and without net dependency.
+- DNS management via ecom-network foundation library.
+- Network configuration via the launcher's "Network Settings" page.
+- Compilation warnings.
+- MicroJvm lockup due to stdatomic builtin functions not being multi-core safe.
+
+---------------------
+ [2.1.0] - 2022-09-27
 ---------------------
 
 Added

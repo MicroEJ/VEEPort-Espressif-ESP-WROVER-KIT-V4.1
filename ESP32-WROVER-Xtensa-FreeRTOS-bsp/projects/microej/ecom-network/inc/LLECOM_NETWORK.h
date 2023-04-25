@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2020-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2020-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -12,8 +12,8 @@
  * @file
  * @brief ECOM-NETWORK exported interface.
  * @author MicroEJ Developer Team
- * @version 2.2.1
- * @date 18 March 2021
+ * @version 2.3.1
+ * @date 13 February 2023
  */
 
 #ifdef __cplusplus

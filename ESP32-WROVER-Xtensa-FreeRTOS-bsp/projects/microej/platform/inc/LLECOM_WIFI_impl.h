@@ -1,10 +1,10 @@
 /*
  * C
  *
- * Copyright 2016-2021 MicroEJ Corp. All rights reserved.
- * This library is provided in source code for use, modification and test, subject to license terms.
- * Any modification of the source code will break MicroEJ Corp. warranties on the whole library.
+ * Copyright 2016-2023 MicroEJ Corp. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
+
 #ifndef _LLECOM_WIFI_IMPL
 #define _LLECOM_WIFI_IMPL
 
@@ -12,17 +12,14 @@
  * @file
  * @brief MicroEJ ECOM-WIFI low level API
  * @author MicroEJ Developer Team
- * @version 1.2.0
- * @date 17 June 2021
+ * @version 1.3.1
  */
 
-#include <stdint.h>
-#include <intern/LLECOM_WIFI_impl.h>
+#include <sni.h>
 
 #ifdef __cplusplus
-extern "C" {
+	extern "C" {
 #endif
-
 
 /** @brief list of Security Modes constants */
 #define SECURITY_MODE_ENTERPRISE_NO_SECURITY		(0)
@@ -58,9 +55,41 @@ extern "C" {
 /** @brief list of Wifi State constants */
 #define WIFI_STATE_IDLE                             (0)
 #define WIFI_STATE_STARTED                          (1)
+
 /** @brief list of Wifi Client State constants for compatibility */
 #define WIFI_CLIENT_STATE_IDLE                      WIFI_STATE_IDLE
 #define WIFI_CLIENT_STATE_STARTED                   WIFI_STATE_STARTED
+
+#define LLECOM_WIFI_IMPL_initialize Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_initialize
+#define LLECOM_WIFI_IMPL_disableSoftAP Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_disableSoftAP
+#define LLECOM_WIFI_IMPL_enableSoftAP Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_enableSoftAP
+#define LLECOM_WIFI_IMPL_setNameSoftAP Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_setNameSoftAP
+#define LLECOM_WIFI_IMPL_getBSSID Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_getBSSID
+#define LLECOM_WIFI_IMPL_getChannel Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_getChannel
+#define LLECOM_WIFI_IMPL_getClientState Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_getClientState
+#define LLECOM_WIFI_IMPL_getAccessPointState Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_getAccessPointState
+#define LLECOM_WIFI_IMPL_getRSSI Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_getRSSI
+#define LLECOM_WIFI_IMPL_getSecurityMode Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_getSecurityMode
+#define LLECOM_WIFI_IMPL_getSSID Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_getSSID
+#define LLECOM_WIFI_IMPL_getWPSModes Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_getWPSModes
+#define LLECOM_WIFI_IMPL_join Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_join
+#define LLECOM_WIFI_IMPL_joinWithSecurityMode Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_joinWithSecurityMode
+#define LLECOM_WIFI_IMPL_leave Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_leave
+#define LLECOM_WIFI_IMPL_scanAPCount Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_scanAPCount
+#define LLECOM_WIFI_IMPL_scanAPssidAt Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_scanAPssidAt
+#define LLECOM_WIFI_IMPL_scanAPbssidAt Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_scanAPbssidAt
+#define LLECOM_WIFI_IMPL_scanAPbssidAt Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_scanAPbssidAt
+#define LLECOM_WIFI_IMPL_scanAPchannelAt Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_scanAPchannelAt
+#define LLECOM_WIFI_IMPL_scanAPrssiAt Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_scanAPrssiAt
+#define LLECOM_WIFI_IMPL_scanAPsecurityModeAt Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_scanAPsecurityModeAt
+#define LLECOM_WIFI_IMPL_scanAPwpsModeAt Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_scanAPwpsModeAt
+#define LLECOM_WIFI_IMPL_getCapability Java_ej_ecom_wifi_natives_GenericWifiManagerNatives_getCapability
+
+/**
+ * @brief High level interface used for generic ecom-wifi module initialization.
+ * It initializes internal components, like the worker and the helper.
+ */
+void LLECOM_WIFI_IMPL_initialize(void);
 
 /**
  * Disable SoftAP.
@@ -110,7 +139,6 @@ int32_t LLECOM_WIFI_IMPL_enableSoftAP(int8_t* ssid, int32_t ssidOffset, int32_t 
  * @see {@link LLNET_ERRORS} header file for error codes
  */
 int32_t LLECOM_WIFI_IMPL_setNameSoftAP(int8_t* name, int32_t nameOffset, int32_t nameLength, int8_t getResult);
-
 
 /**
  * Get the BSSID of the access point.
@@ -382,6 +410,6 @@ int32_t LLECOM_WIFI_IMPL_scanAPwpsModeAt(int32_t index, int8_t getResult);
 int32_t LLECOM_WIFI_IMPL_getCapability(int8_t getResult);
 
 #ifdef __cplusplus
-}
+	}
 #endif
-#endif // _LLECOM_WIFI_IMPL
+#endif

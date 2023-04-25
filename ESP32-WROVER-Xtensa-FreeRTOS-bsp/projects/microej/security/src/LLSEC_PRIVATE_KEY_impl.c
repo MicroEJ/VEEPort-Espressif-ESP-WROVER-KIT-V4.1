@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2021-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2021-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -9,7 +9,7 @@
  * @file
  * @brief MicroEJ Security low level API implementation for MbedTLS Library.
  * @author MicroEJ Developer Team
- * @version 0.10.0
+ * @version 1.1.0
  */
 
 #include <LLSEC_ERRORS.h>
@@ -19,7 +19,6 @@
 
 #include <sni.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "mbedtls/platform.h"
@@ -28,7 +27,9 @@
 //#define LLSEC_PRIVATE_KEY_DEBUG
 
 #ifdef LLSEC_PRIVATE_KEY_DEBUG
-#define LLSEC_PRIVATE_KEY_DEBUG_TRACE(...) printf(__VA_ARGS__)
+// cppcheck-suppress misra-c2012-21.6 // Include only in debug
+#include <stdio.h>
+#define LLSEC_PRIVATE_KEY_DEBUG_TRACE(...) (void)printf(__VA_ARGS__)
 #else
 #define LLSEC_PRIVATE_KEY_DEBUG_TRACE(...) ((void)0)
 #endif
@@ -46,6 +47,7 @@ int32_t LLSEC_PRIVATE_KEY_IMPL_get_encoded_max_size(int32_t native_id)
 {
     LLSEC_PRIVATE_KEY_DEBUG_TRACE("%s \n", __func__);
 
+    // cppcheck-suppress misra-c2012-11.4 // Abstract data type for SNI usage
     LLSEC_priv_key* key = (LLSEC_priv_key*)native_id;
     mbedtls_pk_context pk;
     mbedtls_pk_type_t pk_type;
@@ -85,6 +87,7 @@ int32_t LLSEC_PRIVATE_KEY_IMPL_get_encode(int32_t native_id, uint8_t* output, in
 {
     LLSEC_PRIVATE_KEY_DEBUG_TRACE("%s \n", __func__);
 
+    // cppcheck-suppress misra-c2012-11.4 // Abstract data type for SNI usage
     LLSEC_priv_key* key = (LLSEC_priv_key*)native_id;
     mbedtls_pk_context pk;
     mbedtls_pk_type_t pk_type;

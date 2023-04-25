@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2018-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2017-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -12,8 +12,8 @@
  * @file
  * @brief OS Abstraction Layer FreeRTOS port macro
  * @author MicroEJ Developer Team
- * @version 1.0.2
- * @date 8 December 2020
+ * @version 1.1.0
+ * @date 6 July 2022
  */
 
 #include <stdint.h>

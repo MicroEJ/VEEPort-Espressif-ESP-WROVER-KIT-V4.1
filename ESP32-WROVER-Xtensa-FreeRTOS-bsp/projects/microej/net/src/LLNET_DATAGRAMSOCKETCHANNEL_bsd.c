@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2014-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2014-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -9,8 +9,8 @@
  * @file
  * @brief LLNET_DATAGRAMSOCKETCHANNEL 2.1.0 implementation over BSD-like API.
  * @author MicroEJ Developer Team
- * @version 1.3.1
- * @date 20 April 2021
+ * @version 1.4.2
+ * @date 19 April 2022
  */
 
 #include <LLNET_DATAGRAMSOCKETCHANNEL_impl.h>
@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
 #include "LLNET_CONSTANTS.h"
 #include "LLNET_ERRORS.h"
 #include "LLNET_Common.h"
@@ -165,7 +166,7 @@ int64_t LLNET_DATAGRAMSOCKETCHANNEL_IMPL_receive(int32_t fd, int8_t* dst, int32_
 	int32_t selectRes = non_blocking_select(fd, SELECT_READ);
 
 	if(selectRes == 0){
-		return asyncOperation(fd, SELECT_READ, retry);
+		return  net_asyncOperation(fd, SELECT_READ, retry);
 	}else{
 		return DatagramSocketChannel_recvfrom(fd, dst, dstOffset, dstLength, hostPort, hostPortLength, retry);
 	}
@@ -187,7 +188,7 @@ int32_t LLNET_DATAGRAMSOCKETCHANNEL_IMPL_send(int32_t fd, int8_t* src, int32_t s
 	int32_t selectRes = non_blocking_select(fd, SELECT_WRITE);
 
 	if(selectRes == 0){
-		return asyncOperation(fd, SELECT_WRITE, retry);
+		return  net_asyncOperation(fd, SELECT_WRITE, retry);
 	}else{
 		return DatagramSocketChannel_sendto(fd, src, srcoffset, srclength, addr, addrlength, port, retry);
 	}

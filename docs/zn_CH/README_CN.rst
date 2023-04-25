@@ -1,10 +1,10 @@
 ..
-    Copyright 2019-2022 MicroEJ Corp. All rights reserved.
+    Copyright 2019-2023 MicroEJ Corp. All rights reserved.
     Use of this source code is governed by a BSD-style license that can be found with this software.
 
 .. |BOARD_NAME| replace:: ESP-WROVER-KIT V4.1
 .. |BOARD_REVISION| replace:: 4.1
-.. |PLATFORM_VER| replace:: 2.0.0
+.. |PLATFORM_VER| replace:: 2.2.0
 .. |RCP| replace:: MICROEJ SDK
 .. |PLATFORM| replace:: MicroEJ Platform
 .. |PLATFORMS| replace:: MicroEJ Platforms
@@ -15,9 +15,9 @@
 .. |DEPLOYTOOL_NAME| replace:: Espressif Esptool
 .. |MANUFACTURER| replace:: Espressif
 
-.. _README MicroEJ BSP: ../../ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/docs/zn_CH/README.rst
-.. _RELEASE NOTES: ../../RELEASE_NOTES.rst
-.. _CHANGELOG: ../../CHANGELOG.rst
+.. _README MicroEJ BSP: ./../../ESP32-WROVER-Xtensa-FreeRTOS-bsp/projects/microej/docs/zn_CH/README.rst
+.. _RELEASE NOTES: ./../../RELEASE_NOTES.rst
+.. _CHANGELOG: ./../../CHANGELOG.rst
 
 ==========================================
 |PLATFORM| for |MANUFACTURER| |BOARD_NAME|
@@ -94,7 +94,7 @@
 平台规格
 =======================
 
-Architecture 版本号 ``7.16.1``.
+Architecture 版本号 ``7.20.1``.
 
 本平台提供下面的基础库:
 
@@ -122,7 +122,7 @@ Architecture 版本号 ``7.16.1``.
    * - HAL
      - 1.0
    * - KF
-     - 1.5
+     - 1.6
    * - MICROUI
      - 3.1
    * - NET

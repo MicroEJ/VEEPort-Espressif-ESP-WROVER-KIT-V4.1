@@ -1,0 +1,25 @@
+#
+# Copyright 2022-2023 MicroEJ Corp. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be found with this software.
+#
+
+include:
+  - project: 'I0271_CI/I0271_Gitlab_Templates'
+    file: '/templates/Multi-Module-Flow.gitlab-ci.yml'
+
+---
+
+multibuild:
+  - name: 9C5H4
+    image: p0065-docker.forge.microej.com/sdk-idf
+    variables:
+      MODULE_DIR: "ESP32-WROVER-Xtensa-FreeRTOS-configuration"
+      ANT_PROPERTIES: "-Dcom.microej.platformbuilder.bsp.build.enabled=true -Dcom.microej.platformbuilder.module.multi.enabled=true -Dmmm.module.name=9C5H4 -Dskip.publish=false"
+      APPLY_FIRST_BSP_COMPILE_HOOKS: "true"
+
+  - name: HDAHT
+    image: p0065-docker.forge.microej.com/sdk-idf
+    variables:
+      MODULE_DIR: "ESP32-WROVER-Xtensa-FreeRTOS-configuration"
+      ANT_PROPERTIES: "-Dcom.microej.platformbuilder.bsp.build.enabled=true -Dcom.microej.platformbuilder.module.multi.enabled=false -Dmmm.module.name=HDAHT -Dskip.publish=false"
+      APPLY_FIRST_BSP_COMPILE_HOOKS: "true"

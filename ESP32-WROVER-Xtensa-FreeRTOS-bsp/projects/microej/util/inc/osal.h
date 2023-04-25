@@ -1,35 +1,22 @@
 /*
  * C
  *
- * Copyright 2017-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2017-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
-
-#ifndef OSAL_H
-#define OSAL_H
 
 /**
  * @file
  * @brief OS Abstraction Layer API
  * @author MicroEJ Developer Team
- * @version 1.0.0
- * @date 12 November 2020
+ * @version 1.0.2
+ * @date 17 February 2023
  */
 
+#ifndef OSAL_H
+#define OSAL_H
+
 #include <stdint.h>
-
-/** @brief define an infinite time */
-#define OSAL_INFINITE_TIME    0xFFFFFFFF
-
-/** @brief return code list */
-typedef enum {
-    OSAL_OK,
-    OSAL_ERROR,
-    OSAL_NOMEM,
-    OSAL_WRONG_ARGS,
-    OSAL_NOT_IMPLEMENTED,
-    OSAL_NOT_SUPPORTED
-} OSAL_status_t;
 
 /*
  * Each OSAL port has a unique osal_portmacro.h header file.
@@ -46,19 +33,34 @@ typedef enum {
  *         @param[in] _size number of items that can be stored in the queue. _size must be compile time constant value.
  *         OSAL_queue_declare(_name, _size);
  *
+ * Both macros must be compile-time constants for static initialization.
+ *
  * This file must declare the following type:
  * - OSAL_task_stack_t: OS task stack
  * - OSAL_queue_t: OS queue
  */
 #include "osal_portmacro.h"
 
-#ifndef  OSAL_task_stack_declare
-    #error "osal_portmacro.h doesn't define OSAL_task_stack_declare() macro."
+#if !defined(OSAL_task_stack_declare) || !defined(OSAL_queue_declare)
+	#error "osal_portmacro.h doesn't comply with specification."
 #endif
 
-#ifndef  OSAL_queue_declare
-    #error "osal_portmacro.h doesn't define OSAL_queue_declare() macro."
+#ifdef __cplusplus
+	extern "C" {
 #endif
+
+/** @brief define an infinite time */
+#define OSAL_INFINITE_TIME    0xFFFFFFFF
+
+/** @brief return code list */
+typedef enum {
+	OSAL_OK,
+	OSAL_ERROR,
+	OSAL_NOMEM,
+	OSAL_WRONG_ARGS,
+	OSAL_NOT_IMPLEMENTED,
+	OSAL_NOT_SUPPORTED
+} OSAL_status_t;
 
 #ifndef OSAL_CUSTOM_TYPEDEF
 
@@ -94,7 +96,8 @@ typedef void* OSAL_mutex_handle_t;
  *
  * @return operation status (@see OSAL_status_t)
  */
-OSAL_status_t OSAL_task_create(OSAL_task_entry_point_t entry_point, uint8_t* name, OSAL_task_stack_t stack, int32_t priority, void* parameters, OSAL_task_handle_t* handle);
+OSAL_status_t OSAL_task_create(OSAL_task_entry_point_t entry_point, uint8_t* name, OSAL_task_stack_t stack, int32_t priority,
+		void* parameters, OSAL_task_handle_t* handle);
 
 /**
  * @brief Delete an OS task and start it.
@@ -165,7 +168,8 @@ OSAL_status_t OSAL_queue_fetch(OSAL_queue_handle_t* handle, void** msg, uint32_t
  *
  * @return operation status (@see OSAL_status_t)
  */
-OSAL_status_t OSAL_counter_semaphore_create(uint8_t* name, uint32_t initial_count, uint32_t max_count, OSAL_counter_semaphore_handle_t* handle);
+OSAL_status_t OSAL_counter_semaphore_create(uint8_t* name, uint32_t initial_count, uint32_t max_count,
+		OSAL_counter_semaphore_handle_t* handle);
 
 /**
  * @brief Delete an OS counter semaphore.
@@ -177,9 +181,8 @@ OSAL_status_t OSAL_counter_semaphore_create(uint8_t* name, uint32_t initial_coun
 OSAL_status_t OSAL_counter_semaphore_delete(OSAL_counter_semaphore_handle_t* handle);
 
 /**
- * @brief Take operation on OS counter semaphore. Block the current task until counter semaphore
- * become available or timeout occurred. Decrease the counter semaphore count value by 1 and
- * block the current task if count value equals to 0.
+ * @brief Take operation on OS counter semaphore. Block the current task until counter semaphore become available or timeout
+ * occurred. Decrease the counter semaphore count value by 1 and block the current task if count value equals to 0.
  *
  * @param[in] handle pointer on the counter semaphore handle
  * @param[in] timeout maximum time to wait until the counter semaphore become available, OSAL_INFINITE_TIME for infinite timeout
@@ -189,8 +192,8 @@ OSAL_status_t OSAL_counter_semaphore_delete(OSAL_counter_semaphore_handle_t* han
 OSAL_status_t OSAL_counter_semaphore_take(OSAL_counter_semaphore_handle_t* handle, uint32_t timeout);
 
 /**
- * @brief Give operation on OS counter semaphore. Increase the counter semaphore count value by 1 and unblock the current task if count value.
- * equals to 0.
+ * @brief Give operation on OS counter semaphore. Increase the counter semaphore count value by 1 and unblock the current task if
+ * count value equals to 0.
  *
  * @param[in] handle pointer on the counter semaphore handle
  *
@@ -219,9 +222,8 @@ OSAL_status_t OSAL_binary_semaphore_create(uint8_t* name, uint32_t initial_count
 OSAL_status_t OSAL_binary_semaphore_delete(OSAL_binary_semaphore_handle_t* handle);
 
 /**
- * @brief Take operation on OS binary semaphore. Block the current task until binary semaphore
- * become available or timeout occurred. Decrease the binary semaphore count value by 1 and
- * block the current task if count value equals to 0.
+ * @brief Take operation on OS binary semaphore. Block the current task until binary semaphore become available or timeout
+ * occurred. Decrease the binary semaphore count value by 1 and block the current task if count value equals to 0.
  *
  * @param[in] handle pointer on the binary semaphore handle
  * @param[in] timeout maximum time to wait until the binary semaphore become available, OSAL_INFINITE_TIME for infinite timeout
@@ -231,8 +233,8 @@ OSAL_status_t OSAL_binary_semaphore_delete(OSAL_binary_semaphore_handle_t* handl
 OSAL_status_t OSAL_binary_semaphore_take(OSAL_binary_semaphore_handle_t* handle, uint32_t timeout);
 
 /**
- * @brief Give operation on OS binary semaphore. Increase the binary semaphore count value by 1 and unblock the current task if count value.
- * equals to 0.
+ * @brief Give operation on OS binary semaphore. Increase the binary semaphore count value by 1 and unblock the current task if
+ * count value equals to 0.
  *
  * @param[in] handle pointer on the binary semaphore handle
  *
@@ -279,18 +281,17 @@ OSAL_status_t OSAL_mutex_take(OSAL_mutex_handle_t* handle, uint32_t timeout);
 OSAL_status_t OSAL_mutex_give(OSAL_mutex_handle_t* handle);
 
 /**
- * @brief Disable the OS scheduler context switching. Prevent the OS from
- * scheduling the current thread calling #OSAL_disable_context_switching while
- * the OS scheduling is already disable has an undefined behavior. This method
- * may be called from an interrupt.
+ * @brief Disable the OS scheduler context switching. Prevent the OS from scheduling the current thread calling
+ * #OSAL_disable_context_switching while the OS scheduling is already disable has an undefined behavior. This method may be called
+ * from an interrupt.
  *
  * @return operation status (@see OSAL_status_t)
  */
 OSAL_status_t OSAL_disable_context_switching(void);
 
 /**
- * @brief Reenable the OS scheduling that was disabled by #OSAL_disable_context_switching.
- * This method may be called from an interrupt.
+ * @brief Reenable the OS scheduling that was disabled by #OSAL_disable_context_switching. This method may be called from an
+ * interrupt.
  *
  * @return operation status (@see OSAL_status_t)
  */

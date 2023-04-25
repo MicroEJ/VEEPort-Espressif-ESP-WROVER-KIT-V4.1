@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2021-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2021-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -9,7 +9,7 @@
  * @file
  * @brief MicroEJ Security low level API implementation for MbedTLS Library.
  * @author MicroEJ Developer Team
- * @version 0.10.0
+ * @version 1.1.0
  */
 
 #include <LLSEC_CIPHER_impl.h>
@@ -17,7 +17,6 @@
 #include <LLSEC_configuration.h>
 #include <sni.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -27,6 +26,7 @@
 #if !defined(MBEDTLS_CONFIG_FILE)
 #include "mbedtls/config.h"
 #else
+// cppcheck-suppress preprocessorErrorDirective // macro include
 #include MBEDTLS_CONFIG_FILE
 #endif
 #include "mbedtls/aes.h"
@@ -41,7 +41,9 @@
 //#define LLSEC_CIPHER_DEBUG
 
 #ifdef LLSEC_CIPHER_DEBUG
-#define LLSEC_CIPHER_DEBUG_TRACE(...) printf(__VA_ARGS__)
+// cppcheck-suppress misra-c2012-21.6 // Include only in debug
+#include <stdio.h>
+#define LLSEC_CIPHER_DEBUG_TRACE(...) (void)printf(__VA_ARGS__)
 #else
 #define LLSEC_CIPHER_DEBUG_TRACE(...) ((void)0)
 #endif
@@ -75,7 +77,8 @@ static int mbedtls_cipher_decrypt(void* native_id, uint8_t* buffer, int32_t buff
 static int mbedtls_cipher_encrypt(void* native_id, uint8_t* buffer, int32_t buffer_length, uint8_t* output);
 static void mbedtls_cipher_close(void* native_id);
 
-static LLSEC_CIPHER_transformation available_transformations[] = {
+// cppcheck-suppress misra-c2012-8.9 // Define here for code readability even if it called once in this file.
+static LLSEC_CIPHER_transformation available_transformations[1] = {
     {
         .name = "AES/CBC/NoPadding",
         .init = LLSEC_CIPHER_aescbc_init,
@@ -90,64 +93,55 @@ static LLSEC_CIPHER_transformation available_transformations[] = {
     }
 };
 
+
 static int LLSEC_CIPHER_aescbc_init(int32_t transformation_id, void** native_id, uint8_t is_decrypting, uint8_t* key, int32_t key_length, uint8_t* iv, int32_t iv_length)
 {
     LLSEC_CIPHER_ctx* p_cipher_ctx;
     LLSEC_CIPHER_DEBUG_TRACE("%s %d\n", __func__, is_decrypting);
 
-    int return_code = 0;
-    p_cipher_ctx = LLSEC_calloc(1, sizeof(LLSEC_CIPHER_ctx) - 1 + iv_length);
-    p_cipher_ctx->transformation = (LLSEC_CIPHER_transformation*)transformation_id;
+    int return_code = LLSEC_CIPHER_SUCCESS;
+    p_cipher_ctx = LLSEC_calloc(1, (int32_t)sizeof(LLSEC_CIPHER_ctx) - 1 + iv_length);
+    // cppcheck-suppress misra-c2012-11.4 // Abstract data type for SNI usage
+    p_cipher_ctx->transformation = (LLSEC_CIPHER_transformation*) transformation_id;
     mbedtls_aes_init(&p_cipher_ctx->mbedtls_ctx);
 
-    if (is_decrypting) {
+    if (is_decrypting != (uint8_t) 0) {
         return_code = mbedtls_aes_setkey_dec(&p_cipher_ctx->mbedtls_ctx, key, key_length * 8);
     } else {
         return_code = mbedtls_aes_setkey_enc(&p_cipher_ctx->mbedtls_ctx, key, key_length * 8);
     }
 
-    if(0 != return_code) {
-        return  LLSEC_CIPHER_ERROR;
+    if(return_code != LLSEC_CIPHER_SUCCESS) {
+        return_code =  LLSEC_CIPHER_ERROR;
+    } else {
+        p_cipher_ctx->iv_length = iv_length;
+        (void) memcpy(p_cipher_ctx->iv, iv, iv_length);
+        *native_id = p_cipher_ctx;
     }
-
-    p_cipher_ctx->iv_length = iv_length;
-    memcpy(p_cipher_ctx->iv, iv, iv_length);
-
-    *native_id = p_cipher_ctx;
-    return LLSEC_CIPHER_SUCCESS;
+    return return_code;
 }
 
 static int mbedtls_cipher_decrypt(void* native_id, uint8_t* buffer, int32_t buffer_length, uint8_t* output)
 {
-    int ret = 0;
+    // cppcheck-suppress misra-c2012-11.5 // Abstract data type for SNI usage
     LLSEC_CIPHER_ctx* p_cipher_ctx = (LLSEC_CIPHER_ctx*)native_id;
     LLSEC_CIPHER_DEBUG_TRACE("%s \n", __func__);
-    ret = mbedtls_aes_crypt_cbc(&p_cipher_ctx->mbedtls_ctx, MBEDTLS_AES_DECRYPT, buffer_length,
+    return mbedtls_aes_crypt_cbc(&p_cipher_ctx->mbedtls_ctx, MBEDTLS_AES_DECRYPT, buffer_length,
                                 p_cipher_ctx->iv, buffer, output);
-    if (ret == 0) {
-        return LLSEC_CIPHER_SUCCESS;
-    } else {
-        return ret;
-    }
 }
 
 static int mbedtls_cipher_encrypt(void* native_id, uint8_t* buffer, int32_t buffer_length, uint8_t* output)
 {
-    int ret = 0;
+    // cppcheck-suppress misra-c2012-11.5 // Abstract data type for SNI usage
     LLSEC_CIPHER_ctx* p_cipher_ctx = (LLSEC_CIPHER_ctx*)native_id;
     LLSEC_CIPHER_DEBUG_TRACE("%s \n", __func__);
-    ret = mbedtls_aes_crypt_cbc(&p_cipher_ctx->mbedtls_ctx, MBEDTLS_AES_ENCRYPT, buffer_length,
+    return mbedtls_aes_crypt_cbc(&p_cipher_ctx->mbedtls_ctx, MBEDTLS_AES_ENCRYPT, buffer_length,
                                 p_cipher_ctx->iv, buffer, output);
-    if (ret == 0) {
-        return LLSEC_CIPHER_SUCCESS;
-    } else {
-        return ret;
-    }
 }
 
 static void mbedtls_cipher_close(void* native_id)
 {
-    LLSEC_CIPHER_DEBUG_TRACE("%s native_id:%x\n", __func__, (uint32_t)native_id);
+    LLSEC_CIPHER_DEBUG_TRACE("%s native_id:%p\n", __func__, native_id);
     LLSEC_free(native_id);
 }
 
@@ -171,20 +165,27 @@ static void mbedtls_cipher_close(void* native_id)
  */
 int32_t LLSEC_CIPHER_IMPL_get_transformation_description(uint8_t* transformation_name, LLSEC_CIPHER_transformation_desc* transformation_desc)
 {
+    int32_t return_code = LLSEC_CIPHER_SUCCESS;
     LLSEC_CIPHER_DEBUG_TRACE("%s transformation_name %s\n", __func__, transformation_name);
     int32_t nb_transformations = sizeof(available_transformations) / sizeof(LLSEC_CIPHER_transformation);
     LLSEC_CIPHER_transformation* transformation = &available_transformations[0];
 
     while (--nb_transformations >= 0) {
         if (strcmp((const char*)transformation_name, transformation->name) == 0) {
-            memcpy(transformation_desc, &(transformation->description), sizeof(LLSEC_CIPHER_transformation_desc));
-            return (int32_t)transformation;
+            (void) memcpy(transformation_desc, &(transformation->description), sizeof(LLSEC_CIPHER_transformation_desc));
+            break;
         }
         transformation++;
     }
 
-    // Transformation not found.
-    return -1;
+    if (nb_transformations >= 0)
+    {
+        // cppcheck-suppress misra-c2012-11.4 // Abstract data type for SNI usage
+        return_code = (int32_t)transformation;
+    } else {
+        return_code = LLSEC_CIPHER_ERROR;
+    }
+    return return_code;
 }
 
 /**
@@ -197,7 +198,9 @@ int32_t LLSEC_CIPHER_IMPL_get_transformation_description(uint8_t* transformation
  */
 int32_t LLSEC_CIPHER_IMPL_get_buffered_length(int32_t nativeTransformationId, int32_t nativeId)
 {
-    return 0;
+    (void) nativeTransformationId; // Unused input parameter
+    (void) nativeId; // Unused input parameter
+    return LLSEC_CIPHER_SUCCESS;
 }
 
 /**
@@ -214,9 +217,11 @@ int32_t LLSEC_CIPHER_IMPL_get_buffered_length(int32_t nativeTransformationId, in
  */
 void LLSEC_CIPHER_IMPL_get_IV(int32_t transformation_id, int32_t native_id, uint8_t* iv, int32_t iv_length)
 {
+    (void) transformation_id; // Unused input parameter
+    // cppcheck-suppress misra-c2012-11.4 // Abstract data type for SNI usage
     LLSEC_CIPHER_ctx* p_cipher_ctx = (LLSEC_CIPHER_ctx*)native_id;
     LLSEC_CIPHER_DEBUG_TRACE("%s \n", __func__);
-    memcpy(iv, p_cipher_ctx->iv, iv_length);
+    (void) memcpy(iv, p_cipher_ctx->iv, iv_length);
 }
 
 /**
@@ -229,6 +234,8 @@ void LLSEC_CIPHER_IMPL_get_IV(int32_t transformation_id, int32_t native_id, uint
  */
 int32_t LLSEC_CIPHER_IMPL_get_IV_length(int32_t transformation_id, int32_t native_id)
 {
+    (void) transformation_id; // Unused input parameter
+    // cppcheck-suppress misra-c2012-11.4 // Abstract data type for SNI usage
     LLSEC_CIPHER_ctx* p_cipher_ctx = (LLSEC_CIPHER_ctx*)native_id;
     LLSEC_CIPHER_DEBUG_TRACE("%s \n", __func__);
     return p_cipher_ctx->iv_length;
@@ -253,30 +260,41 @@ int32_t LLSEC_CIPHER_IMPL_get_IV_length(int32_t transformation_id, int32_t nativ
  */
 int32_t LLSEC_CIPHER_IMPL_init(int32_t transformation_id, uint8_t is_decrypting, uint8_t* key, int32_t key_length, uint8_t* iv, int32_t iv_length)
 {
+    int32_t return_code = LLSEC_CIPHER_SUCCESS;
     LLSEC_CIPHER_DEBUG_TRACE("%s \n", __func__);
     void* native_id = NULL;
+    // cppcheck-suppress misra-c2012-11.4 // Abstract data type for SNI usage
     LLSEC_CIPHER_transformation* transformation = (LLSEC_CIPHER_transformation*)transformation_id;
 
     if (iv_length <= 0) {
         SNI_throwNativeException(iv_length, "LLSEC_CIPHER_IMPL_init invalid iv length");
-        return -1;
+        return_code = LLSEC_CIPHER_ERROR;
     }
 
-    int returnCode = transformation->init(transformation_id, (void**)&native_id, is_decrypting, key, key_length, iv, iv_length);
-
-    if (returnCode != LLSEC_CIPHER_SUCCESS) {
-        SNI_throwNativeException(returnCode, "LLSEC_CIPHER_IMPL_init failed");
-        return -1;
+    if (return_code == LLSEC_CIPHER_SUCCESS) {
+         return_code = transformation->init(transformation_id, (void**)&native_id, is_decrypting, key, key_length, iv, iv_length);
+     
+        if (return_code != LLSEC_CIPHER_SUCCESS) {
+            SNI_throwNativeException(return_code, "LLSEC_CIPHER_IMPL_init failed");
+            return_code = LLSEC_CIPHER_ERROR;
+        }
     }
 
-    // register SNI native resource
-    if (SNI_registerResource(native_id, transformation->close, NULL) != SNI_OK) {
-        SNI_throwNativeException(-1, "Can't register SNI native resource");
-        transformation->close((void*)native_id);
-        return -1;
+    if (return_code == LLSEC_CIPHER_SUCCESS) {
+        // register SNI native resource
+        if (SNI_registerResource(native_id, transformation->close, NULL) != SNI_OK) {
+            SNI_throwNativeException(LLSEC_CIPHER_ERROR, "Can't register SNI native resource");
+            transformation->close((void*)native_id);
+            return_code = LLSEC_CIPHER_ERROR;
+        } 
     }
 
-    return (int32_t)(native_id);
+    if (return_code == LLSEC_CIPHER_SUCCESS){
+        // cppcheck-suppress misra-c2012-11.6 // Abstract data type for SNI usage
+        return_code = (int32_t)(native_id);
+    }
+
+    return return_code;
 }
 
 /**
@@ -299,14 +317,19 @@ int32_t LLSEC_CIPHER_IMPL_init(int32_t transformation_id, uint8_t is_decrypting,
  */
 int32_t LLSEC_CIPHER_IMPL_decrypt(int32_t transformation_id, int32_t native_id, uint8_t* buffer, int32_t buffer_offset, int32_t buffer_length, uint8_t* output, int32_t output_offset)
 {
+    int32_t return_code = 0;
     LLSEC_CIPHER_DEBUG_TRACE("%s \n", __func__);
+    // cppcheck-suppress misra-c2012-11.4 // Abstract data type for SNI usage
     LLSEC_CIPHER_transformation* transformation = (LLSEC_CIPHER_transformation*)transformation_id;
-    int returnCode = transformation->decrypt((void*)native_id, buffer + buffer_offset, buffer_length, output + output_offset);
+    // cppcheck-suppress misra-c2012-11.6 // Abstract data type for SNI usage
+    int returnCode = transformation->decrypt((void*)native_id, &buffer[buffer_offset], buffer_length, &output[output_offset]);
     if (returnCode != LLSEC_CIPHER_SUCCESS) {
         SNI_throwNativeException(returnCode, "LLSEC_CIPHER_IMPL_decrypt failed");
-        return -1;
+        return_code = LLSEC_CIPHER_ERROR;
+    } else {
+        return_code = buffer_length;
     }
-    return buffer_length;
+    return return_code;
 }
 
 /**
@@ -329,14 +352,19 @@ int32_t LLSEC_CIPHER_IMPL_decrypt(int32_t transformation_id, int32_t native_id, 
  */
 int32_t LLSEC_CIPHER_IMPL_encrypt(int32_t transformation_id, int32_t native_id, uint8_t* buffer, int32_t buffer_offset, int32_t buffer_length, uint8_t* output, int32_t output_offset)
 {
+    int32_t return_code = 0;
     LLSEC_CIPHER_DEBUG_TRACE("%s \n", __func__);
+    // cppcheck-suppress misra-c2012-11.4 // Abstract data type for SNI usage
     LLSEC_CIPHER_transformation* transformation = (LLSEC_CIPHER_transformation*)transformation_id;
-    int returnCode = transformation->encrypt((void*)native_id, buffer + buffer_offset, buffer_length, output + output_offset);
+    // cppcheck-suppress misra-c2012-11.6 // Abstract data type for SNI usage
+    int returnCode = transformation->encrypt((void*)native_id, &buffer[buffer_offset], buffer_length, &output[output_offset]);
     if (returnCode != LLSEC_CIPHER_SUCCESS) {
         SNI_throwNativeException(returnCode, "LLSEC_CIPHER_IMPL_encrypt failed");
-        return -1;
+        return_code = LLSEC_CIPHER_ERROR;
+    } else {
+        return_code = buffer_length;
     }
-    return buffer_length;
+    return return_code;
 }
 
 /**
@@ -350,11 +378,15 @@ int32_t LLSEC_CIPHER_IMPL_encrypt(int32_t transformation_id, int32_t native_id, 
 void LLSEC_CIPHER_IMPL_close(int32_t transformation_id, int32_t native_id)
 {
     LLSEC_CIPHER_DEBUG_TRACE("%s \n", __func__);
+    // cppcheck-suppress misra-c2012-11.4 // Abstract data type for SNI usage
     LLSEC_CIPHER_transformation* transformation = (LLSEC_CIPHER_transformation*)transformation_id;
 
+    // cppcheck-suppress misra-c2012-11.6 // Abstract data type for SNI usage
     transformation->close((void*)native_id);
+    // cppcheck-suppress misra-c2012-11.6 // Abstract data type for SNI usage
+    // cppcheck-suppress misra-c2012-11.1 // Abstract data type for SNI usage
     if (SNI_unregisterResource((void*)native_id, (SNI_closeFunction)transformation->close) != SNI_OK) {
-        SNI_throwNativeException(-1, "Can't unregister SNI native resource");
+        SNI_throwNativeException(LLSEC_CIPHER_ERROR, "Can't unregister SNI native resource");
     }
     LLSEC_CIPHER_DEBUG_TRACE("%s \n", __func__);
 }
@@ -370,6 +402,8 @@ void LLSEC_CIPHER_IMPL_close(int32_t transformation_id, int32_t native_id)
 int32_t LLSEC_CIPHER_IMPL_get_close_id(int32_t transformation_id)
 {
     LLSEC_CIPHER_DEBUG_TRACE("%s \n", __func__);
+    // cppcheck-suppress misra-c2012-11.4 // Abstract data type for SNI usage
     LLSEC_CIPHER_transformation* transformation = (LLSEC_CIPHER_transformation*)transformation_id;
+    // cppcheck-suppress misra-c2012-11.1 // Abstract data type for SNI usage
     return (int32_t)transformation->close;
 }

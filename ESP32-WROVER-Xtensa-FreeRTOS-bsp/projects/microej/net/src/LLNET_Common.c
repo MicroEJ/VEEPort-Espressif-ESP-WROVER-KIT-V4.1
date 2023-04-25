@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2016-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2016-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -9,8 +9,8 @@
  * @file
  * @brief LLNET_Common implementation over BSD-like API.
  * @author MicroEJ Developer Team
- * @version 1.3.1
- * @date 20 April 2021
+ * @version 1.4.2
+ * @date 19 April 2022
  */
 
 #include "LLNET_Common.h"
@@ -22,9 +22,11 @@
 #include "LLNET_ERRORS.h"
 #include <sys/socket.h>
 #include <sys/time.h>
+#include <netinet/in.h>
 #include <stdint.h>
 #if LLNET_AF & LLNET_AF_IPV6
 #include <ifaddrs.h>
+#include <arpa/inet.h>
 #include <netdb.h>
 #include <net/if.h>
 #endif
@@ -40,6 +42,12 @@
 /* @brief external function used to retrieve currentTime (same as MicroJvm) */
 extern int64_t LLMJVM_IMPL_getCurrentTime__Z(uint8_t system);
 
+/*
+ * @brief perform an asynchronous operation.
+ * The operation timeout is checked from the timeout cache before performing the real action.
+ *
+ * @return 0 on success, J_ETIMEDOUT if the operation timed out or -1 if the async select queue is full.
+ */
 int32_t asyncOperation(int32_t fd, SELECT_Operation operation, uint8_t retry){
 	int32_t timeout;
 
@@ -79,13 +87,24 @@ int32_t asyncOperation(int32_t fd, SELECT_Operation operation, uint8_t retry){
 			return J_ETIMEDOUT;
 		}
 	}
-	int32_t res = async_select(fd, operation, timeout, NULL);
+
+	return async_select(fd, operation, timeout, NULL);
+}
+
+
+int32_t net_asyncOperation(int32_t fd, SELECT_Operation operation, uint8_t retry){
+
+	int32_t res = asyncOperation(fd, operation, retry);
 	if(res == 0){
 		// request added in the queue
 		return J_NET_NATIVE_CODE_BLOCKED_WITHOUT_RESULT;
 	}
-	// requests queue limit reached
-	return J_ASYNC_BLOCKING_REQUEST_QUEUE_LIMIT_REACHED;
+	if(res == -1){
+		// requests queue limit reached
+		return J_ASYNC_BLOCKING_REQUEST_QUEUE_LIMIT_REACHED;
+	}
+	// other net error is directly returned
+	return res;
 }
 
 /**

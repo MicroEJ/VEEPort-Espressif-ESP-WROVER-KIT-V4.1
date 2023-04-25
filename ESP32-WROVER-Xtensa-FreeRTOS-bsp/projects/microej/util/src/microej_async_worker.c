@@ -1,16 +1,16 @@
 /*
  * C
  *
- * Copyright 2018-2022 MicroEJ Corp. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be found with this software.
+ * Copyright 2018-2023 MicroEJ Corp. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be found with this software..
  */
 
 /**
  * @file
  * @brief Asynchronous Worker implementation
  * @author MicroEJ Developer Team
- * @version 0.3.0
- * @date 17 March 2021
+ * @version 0.4.0
+ * @date 17 June 2022
  */
 
 #include "microej_async_worker.h"
@@ -24,7 +24,7 @@
 #endif
 
 // Entry point of the async worker task.
-static void* MICROEJ_ASYNC_WORKER_loop(void* args);
+static void MICROEJ_ASYNC_WORKER_loop(void* args);
 
 // Generic method for MICROEJ_ASYNC_WORKER_async_exec and MICROEJ_ASYNC_WORKER_async_exec_no_wait
 static MICROEJ_ASYNC_WORKER_status_t MICROEJ_ASYNC_WORKER_async_exec_intern(MICROEJ_ASYNC_WORKER_handle_t* async_worker, MICROEJ_ASYNC_WORKER_job_t* job, MICROEJ_ASYNC_WORKER_action_t action, SNI_callback on_done_callback, bool wait);
@@ -174,7 +174,7 @@ MICROEJ_ASYNC_WORKER_job_t* MICROEJ_ASYNC_WORKER_get_job_done(void){
 	return job;
 }
 
-static void* MICROEJ_ASYNC_WORKER_loop(void* args){
+static void MICROEJ_ASYNC_WORKER_loop(void* args){
 	MICROEJ_ASYNC_WORKER_handle_t* async_worker = (MICROEJ_ASYNC_WORKER_handle_t*) args;
 
 	while(1){
@@ -192,7 +192,6 @@ static void* MICROEJ_ASYNC_WORKER_loop(void* args){
 			}
 		}
 	}
-	return NULL;
 }
 
 #ifdef __cplusplus

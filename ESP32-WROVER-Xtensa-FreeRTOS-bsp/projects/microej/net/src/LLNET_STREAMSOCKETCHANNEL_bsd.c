@@ -1,7 +1,7 @@
 /*
  * C
  *
- * Copyright 2014-2022 MicroEJ Corp. All rights reserved.
+ * Copyright 2014-2023 MicroEJ Corp. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be found with this software.
  */
 
@@ -9,8 +9,8 @@
  * @file
  * @brief LLNET_STREAMSOCKETCHANNEL 2.1.0 implementation over BSD-like API.
  * @author MicroEJ Developer Team
- * @version 1.3.1
- * @date 20 April 2021
+ * @version 1.4.2
+ * @date 19 April 2022
  */
 
 #include <LLNET_STREAMSOCKETCHANNEL_impl.h>
@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
 #include <sys/ioctl.h>
 #include "LLNET_CONSTANTS.h"
 #include <LLNET_CHANNEL_impl.h>
@@ -89,7 +90,7 @@ int32_t LLNET_STREAMSOCKETCHANNEL_IMPL_readByteBufferNative(int32_t fd, int32_t 
 	int32_t selectRes = non_blocking_select(fd, SELECT_READ);
 
 	if(selectRes == 0){
-		return asyncOperation(fd, SELECT_READ, retry);
+		return net_asyncOperation(fd, SELECT_READ, retry);
 	}else{
 		return StreamSocketChannel_readByteBufferNative(fd, dst, offset, length);
 	}
@@ -108,7 +109,7 @@ int32_t LLNET_STREAMSOCKETCHANNEL_IMPL_writeByteBufferNative(int32_t fd, int32_t
 	int32_t selectRes = non_blocking_select(fd, SELECT_WRITE);
 
 	if(selectRes == 0){
-		return asyncOperation(fd, SELECT_WRITE, retry);
+		return net_asyncOperation(fd, SELECT_WRITE, retry);
 	}else{
 		return StreamSocketChannel_writeByteBufferNative(fd, src, offset, length);
 	}
@@ -166,7 +167,7 @@ int32_t LLNET_STREAMSOCKETCHANNEL_IMPL_accept(int32_t fd, uint8_t retry)
 	int32_t selectRes = non_blocking_select(fd, SELECT_READ);
 
 	if(selectRes == 0){
-		return asyncOperation(fd, SELECT_READ, retry);
+		return net_asyncOperation(fd, SELECT_READ, retry);
 	}else{
 		return StreamSocketChannel_accept(fd);
 	}
