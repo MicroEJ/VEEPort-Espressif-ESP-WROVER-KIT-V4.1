@@ -11,7 +11,7 @@
 
 .. |BOARD_NAME| replace:: ESP-WROVER-KIT V4.1
 .. |BOARD_REVISION| replace:: 4.1
-.. |PLATFORM_VER| replace:: 2.2.0
+.. |PLATFORM_VER| replace:: 2.2.1
 .. |RCP| replace:: MICROEJ SDK
 .. |PLATFORM| replace:: MicroEJ Platform
 .. |PLATFORMS| replace:: MicroEJ Platforms
@@ -327,7 +327,7 @@ If flashed, the pre-compiled application outputs ``Hello World`` on
 the UART.
 
 When running a Testsuite, logs must be redirected to a secondary UART
-port.  Please refer to `Testsuite Configuration`_ for a detailed
+port.  Please refer to `Test Suite Configuration`_ for a detailed
 explanation.
 
 Please refer to the |MANUFACTURER| documentation available `here

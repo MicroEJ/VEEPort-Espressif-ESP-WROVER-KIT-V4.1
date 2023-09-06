@@ -4,7 +4,7 @@
 
 .. |BOARD_NAME| replace:: ESP-WROVER-KIT V4.1
 .. |BOARD_REVISION| replace:: 4.1
-.. |PLATFORM_VER| replace:: 2.2.0
+.. |PLATFORM_VER| replace:: 2.2.1
 .. |RCP| replace:: MICROEJ SDK
 .. |PLATFORM| replace:: MicroEJ Platform
 .. |PLATFORMS| replace:: MicroEJ Platforms

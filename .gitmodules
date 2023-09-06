@@ -1,4 +1,4 @@
 [submodule "ESP32-WROVER-Xtensa-FreeRTOS-bsp/sdk/esp-idf"]
 	path = ESP32-WROVER-Xtensa-FreeRTOS-bsp/sdk/esp-idf
 	url = https://github.com/espressif/esp-idf.git
-
+	branch = master
